@@ -51,9 +51,24 @@ function getCClient()
     $client->setPrompt('select_account consent');
 
     $chmg_wapu_access_token = get_option('chmg_wapu_api_token_el');
+    $access_token           = get_option('sheet_access_token', false);
+
+    if(false == $access_token){
+        // Exchange authorization code for an access token.
+        $accessToken = $client->fetchAccessTokenWithAuthCode($chmg_wapu_access_token);
+         
+        update_option( 'sheet_access_token', $accessToken, true);
+
+        echo "False: ";
+        print_r($accessToken);
+    }else{
+        $accessToken  = get_option( 'sheet_access_token' );
+        echo "True: ";
+        print_r($accessToken);
+    }
+      
     
-    // Exchange authorization code for an access token.
-    $accessToken = $client->fetchAccessTokenWithAuthCode($chmg_wapu_access_token);
+
     $client->setAccessToken($accessToken);
 
     // Check to see if there was an error.
@@ -71,8 +86,10 @@ $service = new Google_Service_Sheets($client);
 
 // Prints the names and majors of students in a sample spreadsheet:
 // https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
-$spreadsheetId = '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms';
-$range = 'Class Data!A2:E';
+//$spreadsheetId = '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms';
+$spreadsheetId = '16kMF5aJ-aZNlpu22Q7khmhFZqVuGy4ijC2SdEIt_EZY';
+//$range = 'Class Data!A2:E';
+$range = 'Power Wheelchairs';
 $response = $service->spreadsheets_values->get($spreadsheetId, $range);
 $values = $response->getValues();
 
@@ -80,10 +97,14 @@ if (empty($values)) {
     print "No data found.\n";
 } else {
     print "Name, Major:\n";
-    foreach ($values as $row) {
+    echo "<pre>"; 
+        print_r($values);
+    echo "</pre>";
+
+    /* foreach ($values as $row) {
         // Print columns A and E, which correspond to indices 0 and 4.
         printf("%s, %s\n", $row[0], $row[4]);
-    }
+    } */
 }
 
  ?>
