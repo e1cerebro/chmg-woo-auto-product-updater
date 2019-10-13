@@ -113,8 +113,8 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 
 						add_submenu_page( 
 											$parent_slug  = $this->plugin_name, 
-											$page_title = "Woo Store Option", 
-											$menu_title = "Woo Store Option", 
+											$page_title = "Update Inventory", 
+											$menu_title = "Update Inventory", 
 											$capability = "manage_options", 
 											$menu_slug  = $this->plugin_name, 
 											$function 	= [$this, 'chmg_wapu_menu_cb']
@@ -128,7 +128,18 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 											$menu_slug  = $this->plugin_name.'_integration', 
 											$function 	= [$this, 'chmg_wapu_integration_menu_cb']
 										 );
-	}
+
+						add_submenu_page( 
+											$parent_slug  = $this->plugin_name, 
+											$page_title = "Settings", 
+											$menu_title = "Settings", 
+											$capability = "manage_options", 
+											$menu_slug  = $this->plugin_name.'_settings', 
+											$function 	= [$this, 'chmg_wapu_settings_menu_cb']
+										 );
+						
+ 	}
+	
  
 	public function chmg_wapu_menu_cb(){
 
@@ -140,6 +151,11 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 		include_once( 'partials/chmg-woo-auto-product-updater-integration.php' );
  	}	
 
+	public function chmg_wapu_settings_menu_cb(){
+
+		include_once( 'partials/chmg-woo-auto-product-updater-settings.php' );
+ 	}	
+
 	public function chmg_wapu_settings_options(){
 
 		/******** SECTION SETTINGS ********/
@@ -147,7 +163,7 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 			'chmg_wapu_general_section',
 			__( 'Authorization Settings', 'chmg-woo-auto-product-updater' ),
 			[$this, 'chmg_wapu_general_settings_section_cb' ],
-			$this->plugin_name
+			$this->plugin_name.'_integration'
 		);
 
 		/* Google Api */
@@ -155,10 +171,10 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 			'chmg_wapu_api_token_el',
 			__( 'Google Authorization Key', TEXT_DOMAIN),
 			[ $this,'chmg_wapu_api_token_cb'],
-			$this->plugin_name,
+			$this->plugin_name.'_integration',
 			'chmg_wapu_general_section'
  		);
-		register_setting( $this->plugin_name, 'chmg_wapu_api_token_el');
+		register_setting( $this->plugin_name.'_integration', 'chmg_wapu_api_token_el');
 
 	}
 
@@ -180,7 +196,413 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 		<?php
 	}
 
+	public function chmg_wapu_sheet_settings_options(){
+		            /******** SECTION SETTINGS ********/
+					add_settings_section(
+						'chmg_wapu_general_settings_section',
+						__( 'General Settings', 'chmg-woo-auto-product-updater' ),
+						[$this, 'chmg_wapu_settings_section_cb'],
+						$this->plugin_name.'_settings'
+					);
+		
+					add_settings_section(
+						'chmg_wapu_section',
+						__( 'Map Sheet To Columns', 'chmg-woo-auto-product-updater' ),
+						[$this, 'chmg_wapu_settings_section_cb'],
+						$this->plugin_name.'_settings'
+					);
+		
+					add_settings_section(
+						'chmg_wapu_cron_section',
+						__( 'Cron Jobs', 'chmg-woo-auto-product-updater' ),
+						[$this, 'chmg_wapu_settings_section_cb'],
+						$this->plugin_name.'_settings'
+					);
+					/******** FIELDS ********/
+
+					/* CRON JOB FIELDS */
+					add_settings_field(
+						'chmg_wapu_enable_cron_jobs_el',
+						__( 'Enable Cron Jobs', TEXT_DOMAIN),
+						[$this,'chmg_wapu_enable_cron_jobs_cb'],
+						$this->plugin_name.'_settings',
+						'chmg_wapu_cron_section'
+						);
+					register_setting( $this->plugin_name.'_settings', 'chmg_wapu_enable_cron_jobs_el');
+		
+					add_settings_field(
+						'chmg_wapu_choose_interval_el',
+						__( 'Execution Interval', TEXT_DOMAIN),
+						[$this,'chmg_wapu_choose_interval_cb'],
+						$this->plugin_name.'_settings',
+						'chmg_wapu_cron_section'
+						);
+					register_setting( $this->plugin_name.'_settings', 'chmg_wapu_choose_interval_el', [$this, 'chmg_wapu_choose_interval_sanitize']);
 
 
+					/* PRODUCT SKU SETTINGS */
+					add_settings_field(
+						'chmg_wapu_product_sku_el',
+						__( 'Product SKU', TEXT_DOMAIN),
+						[$this,'chmg_wapu_product_sku_cb'],
+					$this->plugin_name.'_settings',
+						'chmg_wapu_section'
+					);
+					/* Register field */
+					register_setting( $this->plugin_name.'_settings', 'chmg_wapu_product_sku_el');
+		
+							
+					/* MAP PRICE SETTINGS */
+					add_settings_field(
+						'chmg_wapu_map_price_el',
+						__( 'MAP Price', TEXT_DOMAIN),
+						[$this,'chmg_wapu_map_price_cb'],
+						$this->plugin_name.'_settings',
+						'chmg_wapu_section'
+					);
+					/* Register field */
+					register_setting( $this->plugin_name.'_settings', 'chmg_wapu_map_price_el');
+
+
+					/* REGULAR PRICE SETTINGS */
+					add_settings_field(
+						'chmg_wapu_regular_price_el',
+						__( 'Regular Price', TEXT_DOMAIN),
+						[$this,'chmg_wapu_regular_price_cb'],
+					$this->plugin_name.'_settings',
+						'chmg_wapu_section'
+					);
+					/* Register field */
+					register_setting( $this->plugin_name.'_settings', 'chmg_wapu_regular_price_el');
+					
+					/* SALES PRICE SETTINGS */
+					add_settings_field(
+						'chmg_wapu_sales_price_el',
+						__( 'Sales Price', TEXT_DOMAIN),
+						[$this,'chmg_wapu_sales_price_cb'],
+						$this->plugin_name.'_settings',
+						'chmg_wapu_section'
+					);
+		
+					/* Register field */
+					register_setting( $this->plugin_name.'_settings', 'chmg_wapu_sales_price_el');
+		
+		
+					/* SHORT DESCRIPTION SETTINGS */
+					add_settings_field(
+						'chmg_wapu_short_description_el',
+						__( 'Short Description', TEXT_DOMAIN),
+						[$this,'chmg_wapu_short_description_cb'],
+					$this->plugin_name.'_settings',
+						'chmg_wapu_section'
+					);
+					register_setting( $this->plugin_name.'_settings', 'chmg_wapu_short_description_el');
+		
+					
+					/* MAIN DESCRIPTION SETTINGS */
+					add_settings_field(
+						'chmg_wapu_main_description_el',
+						__( 'Main Description', TEXT_DOMAIN),
+						[$this,'chmg_wapu_main_description_cb'],
+						$this->plugin_name.'_settings',
+						'chmg_wapu_section'
+						);
+					register_setting( $this->plugin_name.'_settings', 'chmg_wapu_main_description_el');
+		
+		
+					/* ON SALE INDICATOR SETTINGS */
+					add_settings_field(
+						'chmg_wapu_on_sale_el',
+						__( 'On Sale Indicator', TEXT_DOMAIN),
+						[$this,'chmg_wapu_on_sale_cb'],
+						$this->plugin_name.'_settings',
+						'chmg_wapu_section'
+						);
+					register_setting( $this->plugin_name.'_settings', 'chmg_wapu_on_sale_el');
+		
+					/* SKIP PRODUCT  SETTINGS */
+					add_settings_field(
+						'chmg_wapu_skip_product_el',
+						__( 'Ignore Product', TEXT_DOMAIN),
+						[$this,'chmg_wapu_skip_product_cb'],
+						$this->plugin_name.'_settings',
+						'chmg_wapu_section'
+						);
+					register_setting( $this->plugin_name.'_settings', 'chmg_wapu_skip_product_el');
+		
+					
+					/* DEFAULT SHEET ID SETTINGS */
+					add_settings_field(
+						'chmg_wapu_sheet_id_el',
+						__( 'Default Sheet ID', TEXT_DOMAIN),
+						[$this,'chmg_wapu_sheet_id_cb'],
+						$this->plugin_name.'_settings',
+						'chmg_wapu_general_settings_section'
+						);
+					register_setting( $this->plugin_name.'_settings', 'chmg_wapu_sheet_id_el');
+		
+					
+					/* DEFAULT SHEET ID SETTINGS */
+					add_settings_field(
+						'chmg_wapu_set_map_price_el',
+						__( 'MAP Pricing', TEXT_DOMAIN),
+						[$this,'chmg_wapu_set_map_price_cb'],
+						$this->plugin_name.'_settings',
+						'chmg_wapu_general_settings_section'
+						);
+					register_setting( $this->plugin_name.'_settings', 'chmg_wapu_set_map_price_el');
+		
+	}
+
+	
+  
+    /***** CALL BACK FUNCTIONS *******/
+
+    function chmg_wapu_settings_section_cb(){
+
+    }
+
+   
+
+    /* Field callback functions */
+    function chmg_wapu_product_sku_cb(){
+        $chmg_wapu_product_sku_el =  get_option('chmg_wapu_product_sku_el');
+        ?>
+
+        <div class="chmg_wapu_input">
+            <select name="<?php echo esc_attr('chmg_wapu_product_sku_el'); ?>" id="<?php echo esc_attr('chmg_wapu_product_sku_el'); ?>">
+                <?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
+                    <option <?php echo ($chmg_wapu_product_sku_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <?php
+    }
+
+
+    /* Field callback functions */
+	function chmg_wapu_map_price_cb(){
+        $chmg_wapu_map_price_el =  get_option('chmg_wapu_map_price_el');
+		?>
+
+		<div class="chmg_wapu_input">
+            <select name="<?php echo esc_attr('chmg_wapu_map_price_el'); ?>">
+                <?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
+                    <option  <?php echo ($chmg_wapu_map_price_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>
+                <?php endforeach; ?>
+            </select>
+		</div>
+ 
+		<?php
+    }
+
+    /* Field callback functions */
+	function chmg_wapu_regular_price_cb(){
+        $chmg_wapu_regular_price_el =  get_option('chmg_wapu_regular_price_el');
+		?>
+
+		<div class="chmg_wapu_input">
+            <select name="<?php echo esc_attr('chmg_wapu_regular_price_el'); ?>">
+                <?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
+                    <option  <?php echo ($chmg_wapu_regular_price_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>
+                <?php endforeach; ?>
+            </select>
+		</div>
+ 
+		<?php
+    }
+
+    function chmg_wapu_sales_price_cb(){
+		$chmg_wapu_sales_price_el =  get_option('chmg_wapu_sales_price_el');
+		?>
+
+		<div class="chmg_wapu_input">
+            <select name="<?php echo esc_attr('chmg_wapu_sales_price_el'); ?>">
+                <?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
+                    <option <?php echo ($chmg_wapu_sales_price_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+		<?php
+    }
+    
+
+    function chmg_wapu_short_description_cb(){
+		$chmg_wapu_short_description_el =  get_option('chmg_wapu_short_description_el');
+		?>
+
+		<div class="chmg_wapu_input">
+            <select name="<?php echo esc_attr('chmg_wapu_short_description_el'); ?>">
+                <?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
+                    <option <?php echo ($chmg_wapu_short_description_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+		<?php
+    }
+
+
+    function chmg_wapu_main_description_cb(){
+        $chmg_wapu_main_description_el =  get_option('chmg_wapu_main_description_el');
+        ?>
+
+        <div class="chmg_wapu_input">
+            <select name="<?php echo esc_attr('chmg_wapu_main_description_el'); ?>">
+                <?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
+                    <option <?php echo ($chmg_wapu_main_description_el == $key ) ?  "selected" : "" ; ?>  value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <?php
+    }
+
+    function chmg_wapu_on_sale_cb(){
+        $chmg_wapu_on_sale_el =  get_option('chmg_wapu_on_sale_el');
+        ?>
+
+        <div class="chmg_wapu_input">
+            <select name="<?php echo esc_attr('chmg_wapu_on_sale_el'); ?>">
+                <?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
+                    <option <?php echo ($chmg_wapu_on_sale_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <?php
+    }
+
+    function chmg_wapu_skip_product_cb(){
+        $chmg_wapu_skip_product_el =  get_option('chmg_wapu_skip_product_el');
+        ?>
+
+        <div class="chmg_wapu_input">
+            <select name="<?php echo esc_attr('chmg_wapu_skip_product_el'); ?>">
+                <?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
+                    <option <?php echo ($chmg_wapu_skip_product_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <?php
+    }
+
+    function chmg_wapu_sheet_id_cb(){
+        $chmg_wapu_sheet_id_el =  get_option('chmg_wapu_sheet_id_el');
+        ?>
+
+        <div class="chmg_wapu_input">
+            <input class="regular-text" type="text" name="<?php echo esc_attr('chmg_wapu_sheet_id_el'); ?>" value="<?php echo esc_attr($chmg_wapu_sheet_id_el); ?>" >
+        </div>
+
+        <?php
+    }
+
+    function chmg_wapu_set_map_price_cb(){
+        $chmg_wapu_set_map_price_el =  get_option('chmg_wapu_set_map_price_el');
+        ?>
+
+        <div class="chmg_wapu_input">
+			<label for="<?php echo esc_attr('chmg_wapu_set_map_price_el'); ?>">
+				<input <?php echo ("1" == $chmg_wapu_set_map_price_el ) ?  "checked" : "" ; ?> name="<?php echo esc_attr('chmg_wapu_set_map_price_el'); ?>" type="checkbox" id="<?php echo esc_attr('chmg_wapu_set_map_price_el'); ?>" value="1">
+					Show MAP price when product is not on sale</label>
+        </div>
+
+        <?php
+    }
+
+    function chmg_wapu_enable_cron_jobs_cb(){
+        $chmg_wapu_enable_cron_jobs_el =  get_option('chmg_wapu_enable_cron_jobs_el');
+        ?>
+
+        <div class="chmg_wapu_input">
+			<label for="<?php echo esc_attr('chmg_wapu_enable_cron_jobs_el'); ?>">
+				<input <?php echo ("1" == $chmg_wapu_enable_cron_jobs_el ) ?  "checked" : "" ; ?> name="<?php echo esc_attr('chmg_wapu_enable_cron_jobs_el'); ?>" type="checkbox" id="<?php echo esc_attr('chmg_wapu_enable_cron_jobs_el'); ?>" value="1">
+					Toggle this to enable/disable cron jobs</label>
+        </div>
+
+        <?php
+	}
+	
+	function chmg_wapu_choose_interval_cb(){
+		$chmg_wapu_choose_interval_el =  get_option('chmg_wapu_choose_interval_el');
+		?>
+
+		<div class="chmg_wapu_input">
+            <select name="<?php echo esc_attr('chmg_wapu_choose_interval_el'); ?>">
+                <?php foreach( CRON_INTERVALS as $key => $value): ?>
+                    <option <?php echo ($chmg_wapu_choose_interval_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo $value; ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+		<?php
+    }
+	
+	function chmg_wapu_choose_interval_sanitize($chmg_wapu_new_interval){
+		
+			$chmg_wapu_choose_interval_el =  get_option('chmg_wapu_choose_interval_el');
+			
+			if($chmg_wapu_new_interval != $chmg_wapu_choose_interval_el){
+				
+				$timestamp = wp_next_scheduled( 'chmg_wapu_update_products_hook' );
+				wp_unschedule_event( $timestamp, 'chmg_wapu_update_products_hook' );			
+	
+				if ( !wp_next_scheduled( 'chmg_wapu_update_products_hook' ) ) {
+					wp_schedule_event( time(), $chmg_wapu_new_interval, 'chmg_wapu_update_products_hook' );
+				}
+
+			}
+				return $chmg_wapu_new_interval;
+			
+
+    }
+ 
+
+	public function chmg_wapu_update_products_exec(){
+		//wp_mail( 'nwachukwu16@gmail.com', 'Drive Inventory Update Status', 'The Drive Inventory on your website was updated at '.date('Y-m-s H:i:s') );
+		$chmg_wapu_enable_cron_jobs_el =  get_option('chmg_wapu_enable_cron_jobs_el');
+		
+		if ('1' == $chmg_wapu_enable_cron_jobs_el){
+
+			$chmg_wapu_choose_interval_el =  get_option('chmg_wapu_choose_interval_el');
+
+			if ( !wp_next_scheduled( 'chmg_wapu_update_products_hook' ) ) {
+				wp_schedule_event( time(), $chmg_wapu_choose_interval_el, 'chmg_wapu_update_products_hook' );
+			}
+		}else{
+			$timestamp = wp_next_scheduled( 'chmg_wapu_update_products_hook' );
+			wp_unschedule_event( $timestamp, 'chmg_wapu_update_products_hook' );
+		}
+		
+	}
+
+	public function chmg_wapu_update_products_cron(){
+		
+		include_once( 'cron-jobs/chmg-woo-product-updates.php' );
+
+	}
+
+	public function my_cron_schedules($schedules){
+		if(!isset($schedules["3min"])){
+			$schedules["3min"] = array(
+				'interval' => 3*60,
+				'display' => __('Once every 3 minutes'));
+		}
+		if(!isset($schedules["5min"])){
+			$schedules["5min"] = array(
+				'interval' => 5*60,
+				'display' => __('Once every 5 minutes'));
+		}
+		if(!isset($schedules["30min"])){
+			$schedules["30min"] = array(
+				'interval' => 30*60,
+				'display' => __('Once every 30 minutes'));
+		}
+		return $schedules;
+	}
 
 }

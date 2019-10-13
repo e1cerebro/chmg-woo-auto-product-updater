@@ -38,8 +38,8 @@
 
      <form method="post" action="options.php">
         <?php 
-            settings_fields($this->plugin_name);
-            do_settings_sections($this->plugin_name);
+            settings_fields($this->plugin_name.'_integration');
+            do_settings_sections($this->plugin_name.'_integration');
             submit_button();
         ?>
     </form>

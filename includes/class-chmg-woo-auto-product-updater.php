@@ -158,9 +158,14 @@ class Chmg_Woo_Auto_Product_Updater {
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'chmg_wapu_admin_menu' );
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'chmg_wapu_settings_options' );
+		$this->loader->add_action( 'admin_init', $plugin_admin, 'chmg_wapu_sheet_settings_options' );
+		
+		$this->loader->add_action( 'admin_init', $plugin_admin, 'chmg_wapu_update_products_exec' );
+		$this->loader->add_action( 'chmg_wapu_update_products_hook', $plugin_admin, 'chmg_wapu_update_products_cron' );
+		$this->loader->add_filter( 'cron_schedules', $plugin_admin, 'my_cron_schedules' );
 
 	}
-
+ 
 	/**
 	 * Register all of the hooks related to the public-facing functionality
 	 * of the plugin.
