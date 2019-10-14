@@ -38,3 +38,23 @@ function getCClient()
 
     return $client;
 }
+
+function confirmSheetSync(){
+
+    // Get the API client and construct the service object.
+    $client = getCClient();
+    $service = new Google_Service_Sheets($client);
+
+    $spreadsheetId = get_option('chmg_wapu_sheet_id_el');
+
+    $sheets   = $service->spreadsheets->get($spreadsheetId)[sheets];
+
+    if(sizeof($sheets) > 0){
+        return true;
+    }else{
+        return false;
+    }
+
+
+
+}

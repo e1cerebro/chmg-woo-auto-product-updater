@@ -1,4 +1,9 @@
-<?php require __DIR__ . '/vendor/autoload.php'; ?>
+<?php 
+
+    require __DIR__ . '/vendor/autoload.php'; 
+    require plugin_dir_path( dirname( __FILE__ ) ).'/partials/custom-functions/chmg-woo-google-utils.php';
+
+?>
 <?php
     
     function getAccessToken(){
@@ -46,10 +51,18 @@
     </form>
 
     <?php 
-        if(strlen($chmg_wapu_access_token) <= 0):
+        if(strlen($chmg_wapu_access_token) <= 0){
             getAccessToken();
-        endif;
-    
+        }else{
+            if(confirmSheetSync()){
+
+                $sheetID = get_option('chmg_wapu_sheet_id_el');
+                ?>
+                    <hr><a target="_blank" class="chmg_wapu_synced" href="https://docs.google.com/spreadsheets/d/<?php echo $sheetID; ?>/edit#"> &#8651;: Successfully synced with google sheet</a>
+                <?php
+            }
+        }
+
     ?>
  
 

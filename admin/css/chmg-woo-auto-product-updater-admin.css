@@ -59,3 +59,12 @@
     50% { opacity: 0.0; }
     100% { opacity: 1.0; }
 }
+
+
+a.chmg_wapu_synced {
+    display: inline-block;
+    font-size: 1.2em;
+    color: green;
+    font-weight: 900;
+}
+ 
