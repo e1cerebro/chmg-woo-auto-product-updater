@@ -24,13 +24,10 @@ function getCClient()
     if(false == $access_token){
         // Exchange authorization code for an access token.
         $accessToken = $client->fetchAccessTokenWithAuthCode($chmg_wapu_access_token);
-         
         update_option( 'sheet_access_token', $accessToken, true);
     }else{
         $accessToken  = get_option( 'sheet_access_token' );
     }
-      
-    
 
     $client->setAccessToken($accessToken);
 

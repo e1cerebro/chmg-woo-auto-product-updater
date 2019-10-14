@@ -46,9 +46,7 @@
         $map_price = $data_array[$chmg_wapu_map_price ];
 
 
-        if(strlen($sales_price) < 1 && $chmg_wapu_set_map_price_el == 1 ){
-            $product->set_regular_price($map_price);
-        }elseif(strlen($sales_price) >= 1 && $chmg_wapu_set_map_price_el == 1 && 'yes' == $chmg_wapu_ignore_sale ){
+        if(strlen($sales_price) >= 1 && $chmg_wapu_set_map_price_el == 1 && 'no' == $chmg_wapu_ignore_sale ){
             $product->set_regular_price($map_price);
         }else{
             $product->set_regular_price($regular_price);

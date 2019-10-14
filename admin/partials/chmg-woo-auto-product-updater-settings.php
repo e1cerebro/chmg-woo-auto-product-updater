@@ -1,9 +1,3 @@
-<?php
-
-    //require_once __DIR__ .'/settings-api/chmg-woo-sheet-settings.php';
-
-    #add_action('admin_init', 'chmg_wapu_settings_api_options');
-?>
 
 <div class="wrap">
     

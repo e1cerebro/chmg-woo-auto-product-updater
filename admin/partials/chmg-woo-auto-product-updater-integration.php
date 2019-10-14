@@ -20,7 +20,8 @@
                 $authUrl = $client->createAuthUrl();
             }
 
-            echo "<a target='_blank' href='".$authUrl."'> Click here to authorize this plugin to access you google sheets</a>";
+            echo "<h1 class='blink_me'><a target='_blank' class='authorize' href='".$authUrl."'> Click here to get access token</a></h1>";
+            echo "<h3> <strong>Note:</strong> Paste the token code from google in the box above. &#8593;</h3>";
         }
 
     }
