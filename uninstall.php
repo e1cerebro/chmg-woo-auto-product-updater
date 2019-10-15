@@ -29,3 +29,25 @@
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
+
+/* Unschedule All the cron events */
+$timestamp = wp_next_scheduled( 'chmg_wapu_update_products_hook' );
+wp_unschedule_event( $timestamp, 'chmg_wapu_update_products_hook' );			
+		
+
+
+/* Deleting all the options */
+delete_option('chmg_wapu_enable_cron_jobs_el');
+delete_option('chmg_wapu_choose_interval_el');
+delete_option('chmg_wapu_product_sku_el');
+delete_option('chmg_wapu_map_price_el');
+delete_option('chmg_wapu_regular_price_el');
+delete_option('chmg_wapu_sales_price_el');
+delete_option('chmg_wapu_short_description_el');
+delete_option('chmg_wapu_main_description_el');
+delete_option('chmg_wapu_on_sale_el');
+delete_option('chmg_wapu_skip_product_el');
+delete_option('chmg_wapu_sheet_id_el');
+delete_option('chmg_wapu_default_sheet_names_el');
+delete_option('chmg_wapu_set_map_price_el');
+  

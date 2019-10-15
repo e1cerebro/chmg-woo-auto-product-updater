@@ -110,7 +110,7 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 						$menu_slug  = $this->plugin_name, 
 						$function 	= [$this, 'chmg_wapu_menu_cb'], 
 						$icon_url   = 'dashicons-rest-api', 
-						$position = 36);
+						$position = 58);
 
 						add_submenu_page( 
 											$parent_slug  = $this->plugin_name, 
@@ -417,8 +417,10 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 			<div class="chmg-wapu-input">
 				<select name="<?php echo esc_attr('chmg_wapu_product_sku_el'); ?>" id="<?php echo esc_attr('chmg_wapu_product_sku_el'); ?>">
 					<?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
-						<option <?php echo ($chmg_wapu_product_sku_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>
-					<?php endforeach; ?>
+						<?php if( '-1' == $key): ?>	
+ 						<?php else: ?>
+							<option <?php echo ($chmg_wapu_product_sku_el== $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>	
+						<?php endif ?>					<?php endforeach; ?>
 				</select>
 			</div>
 
@@ -437,7 +439,10 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 			<div class="chmg-wapu-input">
 				<select name="<?php echo esc_attr('chmg_wapu_map_price_el'); ?>">
 					<?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
-						<option  <?php echo ($chmg_wapu_map_price_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>
+						<?php if( '-1' == $key): ?>	
+ 						<?php else: ?>
+							<option <?php echo ($chmg_wapu_map_price_el== $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>	
+						<?php endif ?>
 					<?php endforeach; ?>
 				</select>
 			</div>
@@ -457,8 +462,11 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 			<div class="chmg-wapu-input">
 				<select name="<?php echo esc_attr('chmg_wapu_regular_price_el'); ?>">
 					<?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
-						<option  <?php echo ($chmg_wapu_regular_price_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>
-					<?php endforeach; ?>
+						<?php if( '-1' == $key): ?>	
+							<option <?php echo ($chmg_wapu_regular_price_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo $value; ?></option>
+						<?php else: ?>
+							<option <?php echo ($chmg_wapu_regular_price_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>	
+						<?php endif ?>					<?php endforeach; ?>
 				</select>
 			</div>
 	
@@ -477,7 +485,11 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 			<div class="chmg-wapu-input">
 				<select name="<?php echo esc_attr('chmg_wapu_sales_price_el'); ?>">
 					<?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
-						<option <?php echo ($chmg_wapu_sales_price_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>
+						<?php if( '-1' == $key): ?>	
+							<option <?php echo ($chmg_wapu_sales_price_el== $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo $value; ?></option>
+						<?php else: ?>
+							<option <?php echo ($chmg_wapu_sales_price_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>	
+						<?php endif ?>						
 					<?php endforeach; ?>
 				</select>
 			</div>
@@ -497,7 +509,11 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 			<div class="chmg-wapu-input">
 				<select name="<?php echo esc_attr('chmg_wapu_short_description_el'); ?>">
 					<?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
-						<option <?php echo ($chmg_wapu_short_description_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>
+						<?php if( '-1' == $key): ?>	
+							<option <?php echo ($chmg_wapu_short_description_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo $value; ?></option>
+						<?php else: ?>
+							<option <?php echo ($chmg_wapu_short_description_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>	
+						<?php endif ?>						
 					<?php endforeach; ?>
 				</select>
 			</div>
@@ -517,7 +533,11 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 			<div class="chmg-wapu-input">
 				<select name="<?php echo esc_attr('chmg_wapu_main_description_el'); ?>">
 					<?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
-						<option <?php echo ($chmg_wapu_main_description_el == $key ) ?  "selected" : "" ; ?>  value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>
+						<?php if( '-1' == $key): ?>	
+							<option <?php echo ($chmg_wapu_main_description_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo $value; ?></option>
+						<?php else: ?>
+							<option <?php echo ($chmg_wapu_main_description_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>	
+						<?php endif ?>
 					<?php endforeach; ?>
 				</select>
 			</div>
@@ -537,7 +557,10 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 			<div class="chmg-wapu-input">
 				<select name="<?php echo esc_attr('chmg_wapu_on_sale_el'); ?>">
 					<?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
-						<option <?php echo ($chmg_wapu_on_sale_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>
+						<?php if( '-1' == $key): ?>	
+ 						<?php else: ?>
+							<option <?php echo ($chmg_wapu_on_sale_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>	
+						<?php endif ?>					
 					<?php endforeach; ?>
 				</select>
 			</div>
@@ -557,7 +580,9 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 			<div class="chmg_wapu_input">
 				<select name="<?php echo esc_attr('chmg_wapu_skip_product_el'); ?>">
 					<?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
-						<option <?php echo ($chmg_wapu_skip_product_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>
+						<?php if( '-1' != $key): ?>	
+							<option <?php echo ($chmg_wapu_skip_product_el== $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>	
+						<?php endif ?>					
 					<?php endforeach; ?>
 				</select>
 			</div>
@@ -664,6 +689,9 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 	 * @return void
 	 */  
 	public function chmg_wapu_update_products_exec(){
+
+		//include_once( 'cron-jobs/chmg-woo-product-updates.php' );
+
 		//wp_mail( 'nwachukwu16@gmail.com', 'Drive Inventory Update Status', 'The Drive Inventory on your website was updated at '.date('Y-m-s H:i:s') );
 		$chmg_wapu_enable_cron_jobs_el =  get_option('chmg_wapu_enable_cron_jobs_el');
 		
@@ -699,6 +727,11 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 	 * @return void
 	 */ 
 	public function chmg_wapu_custom_cron_schedules($schedules){
+		if(!isset($schedules["1min"])){
+			$schedules["1min"] = array(
+				'interval' => 1*60,
+				'display' => __('Once every minute'));
+		}
 		if(!isset($schedules["3min"])){
 			$schedules["3min"] = array(
 				'interval' => 3*60,

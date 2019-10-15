@@ -36,13 +36,16 @@ if ( ! defined( 'WPINC' ) ) {
  * Rename this for your plugin and update it as you release new versions.
  */
 define( 'CHMG_WOO_AUTO_PRODUCT_UPDATER_VERSION', '1.0.0' );
+define( 'CHMG_WAPU_ADMIN_EMAIL', get_option('admin_email') );
 define( 'TEXT_DOMAIN', 'chmg-woo-auto-product-updater');
-define( 'CRON_INTERVALS', [	'3min' => 'Once every 3 minutes',
+define( 'CRON_INTERVALS', [	'1min' => 'Once every minute',
+							'3min' => 'Once every 3 minutes',
 							'30min' => 'Once every 30 minutes',
 							'hourly' => 'Once every hour',
 							'twicedaily' => 'Twice daily',
 							'daily' => 'Once daily',]);
-define( 'ALPHABETS_MAPPING', [	'0' => 'A', 
+define( 'ALPHABETS_MAPPING', [	'-1' => 'Ignore Column',
+								'0' => 'A', 
 								'1' => 'B', 
 								'2' => 'C', 
 								'3' => 'D', 

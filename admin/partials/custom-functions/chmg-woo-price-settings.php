@@ -11,16 +11,25 @@
         $product = getProduct($product_id);
 
         //Set Regular Price
-        setRegularPrice($product,$data);
+        if('-1' != get_option('chmg_wapu_regular_price_el')){
+            setRegularPrice($product,$data);
+        }
+   
 
         //Set Regular Price
-        setSalesPrice($product,$data);
+        if('-1' != get_option('chmg_wapu_sales_price_el')){
+            setSalesPrice($product,$data);
+        }
        
         //Set Regular Price
-        setShortDescription($product,$data);
+        if('-1' != get_option('chmg_wapu_short_description_el')){
+            setShortDescription($product,$data);
+        }
        
         //Set Regular Price
-        setMainDescription($product,$data);
+        if('-1' != get_option('chmg_wapu_main_description_el')){
+            setMainDescription($product,$data);
+        }
 
     }
 
