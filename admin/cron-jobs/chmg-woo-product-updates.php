@@ -57,9 +57,13 @@ require_once plugin_dir_path( __FILE__ ).'../partials/custom-functions/chmg-woo-
                      $chmg_wapu_skip_key = get_option('chmg_wapu_skip_product_el');
                      $chmg_wapu_skip = $row[$chmg_wapu_skip_key];
  
-                         if('no' == $chmg_wapu_skip){
-                             processData($row);
-                         }
+                     if('-1' == $chmg_wapu_skip_key){
+                        processData($row);
+                    }elseif('no' == $chmg_wapu_skip){
+                        processData($row);
+                    }else{
+                        continue;
+                    }
                  }
  
              }

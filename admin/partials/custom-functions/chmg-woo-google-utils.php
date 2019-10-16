@@ -47,7 +47,11 @@ function confirmSheetSync(){
 
     $spreadsheetId = get_option('chmg_wapu_sheet_id_el');
 
-    $sheets   = $service->spreadsheets->get($spreadsheetId)[sheets];
+    if(strlen($spreadsheetId) >0){
+        $sheets   = $service->spreadsheets->get($spreadsheetId)[sheets];
+    }else{
+        return false;
+    }
 
     if(sizeof($sheets) > 0){
         return true;

@@ -6,6 +6,13 @@
 ?>
 <?php
     
+    if(isset($_POST['chmg_wapu_disconnect'])){
+        delete_option('chmg_wapu_sheet_id_el');
+        delete_option('chmg_wapu_default_sheet_names_el');
+        delete_option('sheet_access_token');
+        delete_option('chmg_wapu_api_token_el');
+    }
+
     function getAccessToken(){
         
         $client = new Google_Client();
@@ -46,11 +53,12 @@
         <?php 
             settings_fields($this->plugin_name.'_integration');
             do_settings_sections($this->plugin_name.'_integration');
-            submit_button();
+            submit_button('Connect Google Sheet'); 
         ?>
     </form>
-
-    <?php 
+    
+      
+     <?php 
         if(strlen($chmg_wapu_access_token) <= 0){
             getAccessToken();
         }else{
@@ -64,7 +72,17 @@
         }
 
     ?>
- 
+ <form method="post" action="">
+            <?php  
+             //if(strlen($chmg_wapu_access_token) > 0 && confirmSheetSync()){
+                $other_attributes = array( 'id' => 'chmg_wapu_disconnect' );
+                submit_button( 'Disconnect Google Sheet', 'delete', 'chmg_wapu_disconnect', true, $other_attributes );
+
+                
+            // }
+            ?>
+            
+        </form>
 
 </div>
 

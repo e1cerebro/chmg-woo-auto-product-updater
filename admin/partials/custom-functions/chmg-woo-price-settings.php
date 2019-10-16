@@ -18,6 +18,7 @@
 
         //Set Regular Price
         if('-1' != get_option('chmg_wapu_sales_price_el')){
+
             setSalesPrice($product,$data);
         }
        
@@ -73,12 +74,17 @@
 
         $chmg_wapu_ignore_sale = $data_array[$chmg_wapu_ignore_sale_key];
         
-        //Check if ignore sale price is on
-        if('yes' == $chmg_wapu_ignore_sale){
-            $sales_price = '';
+        if('-1' != $chmg_wapu_ignore_sale_key){
+             //Check if ignore sale price is on
+            if('yes' == $chmg_wapu_ignore_sale){
+                $sales_price = '';
+            }else{
+                $sales_price = $data_array[$chmg_wapu_sale_price];
+            }
         }else{
             $sales_price = $data_array[$chmg_wapu_sale_price];
         }
+       
 
         $product->set_sale_price($sales_price);
 

@@ -120,6 +120,15 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 											$menu_slug  = $this->plugin_name, 
 											$function 	= [$this, 'chmg_wapu_menu_cb']
 										 );
+						
+						add_submenu_page( 
+											$parent_slug  = $this->plugin_name, 
+											$page_title = "Auto Sync", 
+											$menu_title = "Auto Sync", 
+											$capability = "manage_options", 
+											$menu_slug  = $this->plugin_name.'_automation', 
+											$function 	= [$this, 'chmg_wapu_automation_menu_cb']
+										 );
 
 						add_submenu_page( 
 											$parent_slug  = $this->plugin_name, 
@@ -129,6 +138,8 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 											$menu_slug  = $this->plugin_name.'_integration', 
 											$function 	= [$this, 'chmg_wapu_authorize_menu_cb']
 										 );
+
+					
 
 						add_submenu_page( 
 											$parent_slug  = $this->plugin_name, 
@@ -160,7 +171,16 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 	public function chmg_wapu_authorize_menu_cb(){
 
 		include_once( 'partials/chmg-woo-auto-product-updater-integration.php' );
- 	}	
+	 }	
+	 
+	 /**
+	  * Call back function for the auto Sync menu
+	  * @return void
+	  */ 
+
+	  public function chmg_wapu_automation_menu_cb(){
+		include_once( 'partials/chmg-woo-auto-sync-display.php' );
+	  } 
 	
 	 /**
 	  * Settings menu callback function
@@ -197,6 +217,27 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
  		);
 		register_setting( $this->plugin_name.'_integration', 'chmg_wapu_api_token_el');
 
+		/*====== Default sheet ID ======*/
+		add_settings_field(
+			'chmg_wapu_sheet_id_el',
+			__( 'Default Sheet ID', TEXT_DOMAIN),
+			[$this,'chmg_wapu_sheet_id_cb'],
+			$this->plugin_name.'_integration',
+			'chmg_wapu_general_section'
+			);
+		register_setting( $this->plugin_name.'_integration', 'chmg_wapu_sheet_id_el');
+		
+		/*====== Default Sheet Names - Used during the cron jobs ======*/
+		add_settings_field(
+			'chmg_wapu_default_sheet_names_el',
+			__( 'Default Sheet Names', TEXT_DOMAIN),
+			[$this,'chmg_wapu_default_sheet_names_cb'],
+			$this->plugin_name.'_integration',
+			'chmg_wapu_general_section'
+			);
+		register_setting( $this->plugin_name.'_integration', 'chmg_wapu_default_sheet_names_el');
+		
+	
 	}
 
 	/* General settings callback */
@@ -227,50 +268,7 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 	 * @return void
 	 */
 	public function chmg_wapu_sheet_settings_options(){
-
-			/******** Start General Settings Section ********/
-				add_settings_section(
-					'chmg_wapu_general_settings_section',
-					__( 'General Settings', TEXT_DOMAIN),
-					[$this, 'chmg_wapu_settings_section_cb'],
-					$this->plugin_name.'_settings'
-				);
-			/******** End General Settings Section ********/
-
-			/******* Start the general Settings Field ********/
-				/*====== Default sheet ID ======*/
-				add_settings_field(
-					'chmg_wapu_sheet_id_el',
-					__( 'Default Sheet ID', TEXT_DOMAIN),
-					[$this,'chmg_wapu_sheet_id_cb'],
-					$this->plugin_name.'_settings',
-					'chmg_wapu_general_settings_section'
-					);
-				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_sheet_id_el');
-				
-				/*====== Default Sheet Names - Used during the cron jobs ======*/
-				add_settings_field(
-					'chmg_wapu_default_sheet_names_el',
-					__( 'Default Sheet Names', TEXT_DOMAIN),
-					[$this,'chmg_wapu_default_sheet_names_cb'],
-					$this->plugin_name.'_settings',
-					'chmg_wapu_general_settings_section'
-					);
-				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_default_sheet_names_el');
-				
-				
-				/*====== Swap MAP with regular price when product is on sale ======*/
-				add_settings_field(
-					'chmg_wapu_set_map_price_el',
-					__( 'MAP &#10152; Regular Price', TEXT_DOMAIN),
-					[$this,'chmg_wapu_set_map_price_cb'],
-					$this->plugin_name.'_settings',
-					'chmg_wapu_general_settings_section'
-					);
-				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_set_map_price_el');
-	
-			/******* End the general Settings Field ********/
-
+ 
 			/******** Start Sheet Mapping Section ********/
 				add_settings_section(
 					'chmg_wapu_section',
@@ -300,6 +298,17 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 					'chmg_wapu_section'
 				);
 				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_map_price_el');
+
+				/*====== Swap MAP with regular price when product is on sale ======*/
+				add_settings_field(
+					'chmg_wapu_set_map_price_el',
+					__( 'MAP &#10152; Regular Price', TEXT_DOMAIN),
+					[$this,'chmg_wapu_set_map_price_cb'],
+					$this->plugin_name.'_settings',
+					'chmg_wapu_section'
+					);
+				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_set_map_price_el');
+	
 
 				/*====== REGULAR PRICE SETTINGS ======*/
 				add_settings_field(
@@ -368,7 +377,7 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 					'chmg_wapu_cron_section',
 					__( 'Cron Jobs', TEXT_DOMAIN ),
 					[$this, 'chmg_wapu_settings_section_cb'],
-					$this->plugin_name.'_settings'
+					$this->plugin_name.'_automation'
 				);
 			/******** End Cron Job Section ********/
 
@@ -379,20 +388,20 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 					'chmg_wapu_enable_cron_jobs_el',
 					__( 'Enable Cron Jobs', TEXT_DOMAIN),
 					[$this,'chmg_wapu_enable_cron_jobs_cb'],
-					$this->plugin_name.'_settings',
+					$this->plugin_name.'_automation',
 					'chmg_wapu_cron_section'
 					);
-				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_enable_cron_jobs_el');
+				register_setting( $this->plugin_name.'_automation', 'chmg_wapu_enable_cron_jobs_el');
 	
 				/*====== Execution Interval ======*/
 				add_settings_field(
 					'chmg_wapu_choose_interval_el',
 					__( 'Execution Interval', TEXT_DOMAIN),
 					[$this,'chmg_wapu_choose_interval_cb'],
-					$this->plugin_name.'_settings',
+					$this->plugin_name.'_automation',
 					'chmg_wapu_cron_section'
 					);
-				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_choose_interval_el', [$this, 'chmg_wapu_choose_interval_sanitize']);
+				register_setting( $this->plugin_name.'_automation', 'chmg_wapu_choose_interval_el', [$this, 'chmg_wapu_choose_interval_sanitize']);
 			
 			/******** End Cron Job Field ********/
 	}
@@ -558,6 +567,7 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 				<select name="<?php echo esc_attr('chmg_wapu_on_sale_el'); ?>">
 					<?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
 						<?php if( '-1' == $key): ?>	
+						<option <?php echo ($chmg_wapu_on_sale_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo $value; ?></option>	
  						<?php else: ?>
 							<option <?php echo ($chmg_wapu_on_sale_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>	
 						<?php endif ?>					
@@ -582,7 +592,9 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 					<?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
 						<?php if( '-1' != $key): ?>	
 							<option <?php echo ($chmg_wapu_skip_product_el== $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>	
-						<?php endif ?>					
+						<?php else: ?>
+							<option <?php echo ($chmg_wapu_skip_product_el== $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo "<strong>".$value."</strong>"; ?></option>	
+						<?php endif ?>
 					<?php endforeach; ?>
 				</select>
 			</div>
