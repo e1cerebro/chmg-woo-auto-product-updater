@@ -5,32 +5,44 @@
 
         //Get product Id using the SKU
         $chmg_wapu_sku = get_option('chmg_wapu_product_sku_el');
-        $product_id = wc_get_product_id_by_sku($data[$chmg_wapu_sku]);
+        $chmg_wapu_product_name_key = get_option('chmg_wapu_product_name_el');
+
+        $chmg_product_real_sku  = $data[$chmg_wapu_sku];
+        $chmg_wapu_product_name = $data[$chmg_wapu_product_name_key];
+
+        $status = '';
+
+        $product_id = wc_get_product_id_by_sku($chmg_product_real_sku);
 
         //get product object
         $product = getProduct($product_id);
 
-        //Set Regular Price
-        if('-1' != get_option('chmg_wapu_regular_price_el')){
-            setRegularPrice($product,$data);
-        }
-   
+        if(!empty($product)){
+                //Set Regular Price
+            if('-1' != get_option('chmg_wapu_regular_price_el')){
+                setRegularPrice($product,$data);
+            }
+    
 
-        //Set Regular Price
-        if('-1' != get_option('chmg_wapu_sales_price_el')){
+            //Set Regular Price
+            if('-1' != get_option('chmg_wapu_sales_price_el')){
+                setSalesPrice($product,$data);
+            }
+        
+            //Set Regular Price
+            if('-1' != get_option('chmg_wapu_short_description_el')){
+                setShortDescription($product,$data);
+            }
+        
+            //Set Regular Price
+            if('-1' != get_option('chmg_wapu_main_description_el')){
+                setMainDescription($product,$data);
+            }
+        }else{
+            $status = sprintf("%s", $chmg_wapu_product_name." (".$chmg_product_real_sku.")");
+        }
 
-            setSalesPrice($product,$data);
-        }
-       
-        //Set Regular Price
-        if('-1' != get_option('chmg_wapu_short_description_el')){
-            setShortDescription($product,$data);
-        }
-       
-        //Set Regular Price
-        if('-1' != get_option('chmg_wapu_main_description_el')){
-            setMainDescription($product,$data);
-        }
+        return $status;
 
     }
 

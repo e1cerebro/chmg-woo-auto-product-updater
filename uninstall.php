@@ -52,4 +52,10 @@ delete_option('chmg_wapu_default_sheet_names_el');
 delete_option('chmg_wapu_set_map_price_el');
 delete_option('sheet_access_token');
 delete_option('chmg_wapu_api_token_el');
-  
+delete_option('chmg_wapu_email_who_el');
+
+/* Deleting Email related info from DB */
+delete_option('chmg_wapu_email_who_el');
+delete_option('chmg_wapu_mail_recipient_el');
+delete_option('chmg_wapu_auto_sync_notification_el');
+delete_option('chmg_wapu_manual_sync_notification_el');

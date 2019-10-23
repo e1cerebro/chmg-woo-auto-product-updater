@@ -276,6 +276,7 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 					[$this, 'chmg_wapu_settings_section_cb'],
 					$this->plugin_name.'_settings'
 				);
+			
 			/******** End Sheet Mapping Section ********/
 			
 			/******* Start Sheet Mapping Field ********/
@@ -309,6 +310,17 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 					);
 				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_set_map_price_el');
 	
+
+				/*====== PRODUCT NAME SETTINGS ======*/
+				add_settings_field(
+					'chmg_wapu_product_name_el',
+					__( 'Product Name', TEXT_DOMAIN),
+					[$this,'chmg_wapu_product_name_cb'],
+				$this->plugin_name.'_settings',
+					'chmg_wapu_section'
+				);
+				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_product_name_el');
+
 
 				/*====== REGULAR PRICE SETTINGS ======*/
 				add_settings_field(
@@ -404,6 +416,64 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 				register_setting( $this->plugin_name.'_automation', 'chmg_wapu_choose_interval_el', [$this, 'chmg_wapu_choose_interval_sanitize']);
 			
 			/******** End Cron Job Field ********/
+
+			/******** Start Mailing Section ********/
+				add_settings_section(
+					'chmg_wapu_mailing_notification_section',
+					__( 'Mailing/Notification', TEXT_DOMAIN ),
+					[$this, 'chmg_wapu_settings_section_cb'],
+					$this->plugin_name.'_settings'
+				);
+		   /******** End Mailing Section ********/
+
+
+			/******** Start Notification Field ********/
+				add_settings_field(
+					'chmg_wapu_manual_sync_notification_el',
+					__( 'Manual Sync Notification', TEXT_DOMAIN),
+					[$this,'chmg_wapu_manual_sync_notification_cb'],
+					$this->plugin_name.'_settings',
+					'chmg_wapu_mailing_notification_section'
+					);
+				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_manual_sync_notification_el');
+
+			/******** End Notification Field ********/
+
+
+			/******** Start Auto Sync Notification Field ********/
+				add_settings_field(
+					'chmg_wapu_auto_sync_notification_el',
+					__( 'Auto Sync Notification', TEXT_DOMAIN),
+					[$this,'chmg_wapu_auto_sync_notification_cb'],
+					$this->plugin_name.'_settings',
+					'chmg_wapu_mailing_notification_section'
+					);
+				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_auto_sync_notification_el');
+			/******** End Auto Sync Notification Field ********/
+
+			/******** Start Notification Field ********/
+				add_settings_field(
+					'chmg_wapu_mail_recipient_el',
+					__( 'Email Recipient', TEXT_DOMAIN),
+					[$this,'chmg_wapu_mail_recipient_cb'],
+					$this->plugin_name.'_settings',
+					'chmg_wapu_mailing_notification_section'
+					);
+				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_mail_recipient_el');
+
+			/******** End Notification Field ********/
+			
+			/******** Start Notification Field ********/
+				add_settings_field(
+					'chmg_wapu_email_who_el',
+					__( 'Email Filter', TEXT_DOMAIN),
+					[$this,'chmg_wapu_email_who_cb'],
+					$this->plugin_name.'_settings',
+					'chmg_wapu_mailing_notification_section'
+					);
+				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_email_who_el');
+			/******** End Notification Field ********/
+
 	}
 
 	
@@ -459,6 +529,29 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 			<?php
 		}
 		
+		/**
+		 * Generate the HTML for Regular Price
+		 *
+		 * @return void
+		 */ 
+		function chmg_wapu_product_name_cb(){
+			$chmg_wapu_product_name_el =  get_option('chmg_wapu_product_name_el');
+			?>
+
+			<div class="chmg-wapu-input">
+				<select name="<?php echo esc_attr('chmg_wapu_product_name_el'); ?>">
+					<?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
+						<?php if( '-1' == $key): ?>	
+ 						<?php else: ?>
+							<option <?php echo ($chmg_wapu_product_name_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>	
+						<?php endif ?>					
+					<?php endforeach; ?>
+				</select>
+			</div>
+	
+			<?php
+		}
+
 		/**
 		 * Generate the HTML for Regular Price
 		 *
@@ -604,7 +697,60 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 
 
 	/*============ End Sheet Mapping HMTL creation functions ============*/
- 
+
+	/*============ Start Notification  HMTL creation functions ============*/	
+		function chmg_wapu_auto_sync_notification_cb(){
+			$chmg_wapu_auto_sync_notification_el =  get_option('chmg_wapu_auto_sync_notification_el');
+			?>
+
+			<div class="chmg-wapu-input">
+				<label for="<?php echo esc_attr('chmg_wapu_auto_sync_notification_el'); ?>">
+					<input <?php echo ("1" == $chmg_wapu_auto_sync_notification_el ) ?  "checked" : "" ; ?> name="<?php echo esc_attr('chmg_wapu_auto_sync_notification_el'); ?>" type="checkbox" id="<?php echo esc_attr('chmg_wapu_auto_sync_notification_el'); ?>" value="1">
+						Enable Notification</label>
+			</div>
+
+			<?php
+		}
+		function chmg_wapu_manual_sync_notification_cb(){
+			$chmg_wapu_manual_sync_notification_el =  get_option('chmg_wapu_manual_sync_notification_el');
+			?>
+
+			<div class="chmg-wapu-input">
+				<label for="<?php echo esc_attr('chmg_wapu_manual_sync_notification_el'); ?>">
+					<input <?php echo ("1" == $chmg_wapu_manual_sync_notification_el ) ?  "checked" : "" ; ?> name="<?php echo esc_attr('chmg_wapu_manual_sync_notification_el'); ?>" type="checkbox" id="<?php echo esc_attr('chmg_wapu_manual_sync_notification_el'); ?>" value="1">
+						Enable Notification</label>
+			</div>
+
+			<?php
+		}
+
+		function chmg_wapu_mail_recipient_cb(){
+			$chmg_wapu_mail_recipient_el =  get_option('chmg_wapu_mail_recipient_el');
+			?>
+
+			<div class="chmg-wapu-input">
+					<input class="regular-text"  name="<?php echo esc_attr('chmg_wapu_mail_recipient_el'); ?>" type="text" id="<?php echo esc_attr('chmg_wapu_mail_recipient_el'); ?>" value="<?php echo esc_attr($chmg_wapu_mail_recipient_el); ?>">
+			</div>
+
+			<?php
+		}
+
+		function chmg_wapu_email_who_cb(){
+			$chmg_wapu_email_who_el =  get_option('chmg_wapu_email_who_el');
+			?>
+
+			<div class="chmg-wapu-input">
+				<select name="<?php echo esc_attr('chmg_wapu_email_who_el'); ?>">
+						<option <?php echo ( 'admin_only' == $chmg_wapu_email_who_el ) ?  "selected" : "" ; ?> value="admin_only" ><?php echo esc_html('Admin Only', TEXT_DOMAIN); ?></option>
+						<option <?php echo ( 'admin_and_others' == $chmg_wapu_email_who_el ) ?  "selected" : "" ; ?> value="admin_and_others" ><?php echo esc_html('Admin & Others', TEXT_DOMAIN); ?></option>
+						<option <?php echo ( 'others_only' == $chmg_wapu_email_who_el ) ?  "selected" : "" ; ?> value="others_only" ><?php echo esc_html('Others Only', TEXT_DOMAIN); ?></option>
+ 				</select>
+			</div>
+
+			<?php
+		}
+ 	/*============ End Notification  HMTL creation functions ============*/	
+
 
 	/*====== START GENERAL SETTINGS HTML FIELDS FUNCTIONS======*/
 		function chmg_wapu_sheet_id_cb(){
@@ -676,21 +822,21 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 		}
 		
 		function chmg_wapu_choose_interval_sanitize($chmg_wapu_new_interval){
-			
+
 				$chmg_wapu_choose_interval_el =  get_option('chmg_wapu_choose_interval_el');
-				
+
 				if($chmg_wapu_new_interval != $chmg_wapu_choose_interval_el){
-					
+
 					$timestamp = wp_next_scheduled( 'chmg_wapu_update_products_hook' );
-					wp_unschedule_event( $timestamp, 'chmg_wapu_update_products_hook' );			
-		
+					wp_unschedule_event( $timestamp, 'chmg_wapu_update_products_hook' );
+
 					if ( !wp_next_scheduled( 'chmg_wapu_update_products_hook' ) ) {
 						wp_schedule_event( time(), $chmg_wapu_new_interval, 'chmg_wapu_update_products_hook' );
 					}
 
 				}
-					return $chmg_wapu_new_interval;
-				
+
+				return $chmg_wapu_new_interval;
 
 		}
  	/*====== END CRON JOBS SETTINGS HTML FIELDS FUNCTIONS======*/

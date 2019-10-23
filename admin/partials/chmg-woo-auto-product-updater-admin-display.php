@@ -14,6 +14,7 @@
 
 require_once __DIR__ .'/custom-functions/chmg-woo-google-utils.php';
 require_once __DIR__ .'/custom-functions/chmg-woo-price-settings.php';
+require_once __DIR__ .'/custom-functions/chmg-woo-process-emails.php';
 
 
 if(isset($_POST['submit'])){
@@ -41,7 +42,7 @@ if(isset($_POST['submit'])){
 
         /* get the available sheet names from the google ID provided */
         try {
-            $sheets   = $service->spreadsheets->get($spreadsheetId)[sheets];
+            $sheets   = $service->spreadsheets->get($spreadsheetId)['sheets'];
         } catch (Exception $e) {
             echo "<div class='error notice'>
                     <p>".$e->getMessage()."</p>
@@ -52,6 +53,9 @@ if(isset($_POST['submit'])){
 
 
     if(!empty($sheets)){
+
+        $products_non_exits_arr = [];
+
         /* Loop through the sheet names */
         foreach ($sheets as $row){
 
@@ -82,12 +86,24 @@ if(isset($_POST['submit'])){
                         $chmg_wapu_skip = $row[$chmg_wapu_skip_key];
                      
                         if('-1' == $chmg_wapu_skip_key){
-                            processData($row);
+                            $response = processData($row);
+
+                            if(!empty($response)){
+                                array_push($products_non_exits_arr, $response);
+                            }
+
                         }elseif('no' == $chmg_wapu_skip){
-                            processData($row);
+                            $response = processData($row);
+
+                            if(!empty($response)){
+                                array_push($products_non_exits_arr, $response);
+                            }
+
                         }else{
                             continue;
                         }
+
+                        
                     }
     
                 }
@@ -97,6 +113,11 @@ if(isset($_POST['submit'])){
                 </div>";
             }
 
+        }
+
+        /* Send the email to the customer */
+        if('1' == get_option('chmg_wapu_manual_sync_notification_el')){
+            ChmgWapuEmail::send_sync_complete_mail($products_non_exits_arr);
         }
 
         echo "<div class='updated notice'>

@@ -2,6 +2,7 @@
 
 require_once plugin_dir_path( __FILE__ ).'../partials/custom-functions/chmg-woo-google-utils.php';
 require_once plugin_dir_path( __FILE__ ).'../partials/custom-functions/chmg-woo-price-settings.php';
+require_once plugin_dir_path( __FILE__ ).'../partials/custom-functions/chmg-woo-process-emails.php';
 
  
  // Get the API client and construct the service object.
@@ -23,16 +24,19 @@ require_once plugin_dir_path( __FILE__ ).'../partials/custom-functions/chmg-woo-
      try {
          $sheets   = $service->spreadsheets->get($spreadsheetId)[sheets];
      } catch (Exception $e) {
-   
-        wp_mail( CHMG_WAPU_ADMIN_EMAIL, 'Woo Sync Error', $e->getMessage().date('Y-m-s H:i:s') );
 
+        $message = $e->getMessage().date('Y-m-s H:i:s');
+        ChmgWapuEmail::send_error_mail($message);
      }
      
  }
  
  if(!empty($sheets)){
+
+    $products_non_exits_arr = [];
+
      /* Loop through the sheet names */
-     foreach ($sheets as $row){
+    foreach ($sheets as $row){
 
          if(!empty($custom_sheets)){
              $sheetName = trim($row);
@@ -45,7 +49,8 @@ require_once plugin_dir_path( __FILE__ ).'../partials/custom-functions/chmg-woo-
              $response = $service->spreadsheets_values->get($spreadsheetId, $sheetName);
              $values   = $response->getValues();
          } catch (Exception $e) {
-            wp_mail( CHMG_WAPU_ADMIN_EMAIL, 'Woo Sync Error', $e->getMessage()." \nDate:".date('Y-m-s H:i:s') );
+            $message = $e->getMessage()." \nDate:".date('Y-m-s H:i:s');
+            ChmgWapuEmail::send_error_mail($message);     
          }
 
          /* Check if any values were returned */
@@ -58,9 +63,15 @@ require_once plugin_dir_path( __FILE__ ).'../partials/custom-functions/chmg-woo-
                      $chmg_wapu_skip = $row[$chmg_wapu_skip_key];
  
                      if('-1' == $chmg_wapu_skip_key){
-                        processData($row);
+                        $response =  processData($row);
+                        if(!empty($response)){
+                            array_push($products_non_exits_arr, $response);
+                        }
                     }elseif('no' == $chmg_wapu_skip){
-                        processData($row);
+                        $response = processData($row);
+                        if(!empty($response)){
+                            array_push($products_non_exits_arr, $response);
+                        }
                     }else{
                         continue;
                     }
@@ -68,14 +79,17 @@ require_once plugin_dir_path( __FILE__ ).'../partials/custom-functions/chmg-woo-
  
              }
          }else{
-             wp_mail( CHMG_WAPU_ADMIN_EMAIL, 'Woo Sync Error', "Couldn't find a sheet name \n".$e->getMessage()." \nDate:".date('Y-m-s H:i:s') );
-
+            
+             ChmgWapuEmail::send_error_mail('Could not retrieve values for '.$sheetName.' sheet name');
          }
 
      }
 
-         wp_mail( CHMG_WAPU_ADMIN_EMAIL, 'Woo Sync Completed', "Your store have been synced with the google sheet." );
+    /* Send the email to the customer */
+    if('1' == get_option('chmg_wapu_auto_sync_notification_el')){
+        ChmgWapuEmail::send_sync_complete_mail($products_non_exits_arr);
+    }
 
  }else{
-         wp_mail( CHMG_WAPU_ADMIN_EMAIL, 'Woo Sync Error', "Couldn't find a sheet name \n".$e->getMessage()." \nDate:".date('Y-m-s H:i:s') );
+    ChmgWapuEmail::send_error_mail('Could not find a sheet name from your query');     
  }
