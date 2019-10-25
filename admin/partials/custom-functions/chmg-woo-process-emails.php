@@ -14,9 +14,17 @@
                 }
                 $message .= "</ol>";
                 $message .= "<p> Doamin: ".self::domain_host()."</p>";
+
+                $sheetID = get_option('chmg_wapu_sheet_id_el');
+                $message .= "<p>Sheet: https://docs.google.com/spreadsheets/d/".$sheetID."/edit</p>";
+
             }else{
                 $message = "<p>Sheet successfully synced with your website</p>\n";
                 $message .= "<p>Domain: ".self::domain_host()."</p>";
+
+                $sheetID = get_option('chmg_wapu_sheet_id_el');
+                
+                $message .= "<p>Sheet: https://docs.google.com/spreadsheets/d/".$sheetID."/edit</p>";
             }
             $recipient_email = self::get_recipients();
             wp_mail( $recipient_email , "Woo Sync Report", $message, $headers);

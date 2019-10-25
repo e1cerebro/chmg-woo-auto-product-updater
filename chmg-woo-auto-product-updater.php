@@ -72,6 +72,9 @@ define( 'ALPHABETS_MAPPING', [	'-1' => 'Skip This Option',
 								'24'=>'Y', 
 								'25'=>'Z']);
 
+
+define('CHMG_ADMIN_IMAGE_PATH', plugin_dir_url( __FILE__ ).'admin/img/');
+
 /**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-chmg-woo-auto-product-updater-activator.php

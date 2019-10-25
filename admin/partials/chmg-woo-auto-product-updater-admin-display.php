@@ -137,7 +137,7 @@ if(isset($_POST['submit'])){
     
     <h1><?php echo get_admin_page_title(); ?></h1>
 
-     <form method="post" action="">
+     <form method="post" id="update-store" action="">
         <table class="form-table" role="presentation">
           <tbody>
             <tr>
@@ -170,6 +170,8 @@ if(isset($_POST['submit'])){
         <p class="submit">
             <input type="submit" name="submit" id="submit" class="button button-primary" value="Update Store">
         </p>   
+
+        <img src="<?php echo CHMG_ADMIN_IMAGE_PATH.'/processing.gif'; ?>" class="processing-img hide-img" width="400" height="auto"/>
     </form>
 
 </div>
