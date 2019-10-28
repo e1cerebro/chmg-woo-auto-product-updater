@@ -168,7 +168,7 @@ if(isset($_POST['submit'])){
             </tbody>
         </table>
         <p class="submit">
-            <input type="submit" name="submit" id="submit" class="button button-primary" value="Update Store">
+            <input type="submit" name="submit" id="update-store-btn" class="button button-primary" value="Update Store">
         </p>   
 
         <img src="<?php echo CHMG_ADMIN_IMAGE_PATH.'/processing.gif'; ?>" class="processing-img hide-img" width="400" height="auto"/>

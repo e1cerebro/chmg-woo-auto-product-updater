@@ -268,6 +268,30 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 	 * @return void
 	 */
 	public function chmg_wapu_sheet_settings_options(){
+
+		/******** Start Product Setting Section ********/
+			add_settings_section(
+				'chmg_wapu_product_settings_section',
+				__( 'Product Settings', TEXT_DOMAIN ),
+				[$this, 'chmg_wapu_settings_section_cb'],
+				$this->plugin_name.'_settings'
+			);
+		/******** End Product Setting Section ********/
+
+		/******* Start Product Settings Field ********/
+			/*====== PRODUCT SKU SETTINGS ======*/
+			add_settings_field(
+				'chmg_wapu_product_variation_description_el',
+				__( 'Product Variation Description', TEXT_DOMAIN),
+				[$this,'chmg_wapu_product_variation_description_cb'],
+				$this->plugin_name.'_settings',
+				'chmg_wapu_product_settings_section'
+			);
+			register_setting( $this->plugin_name.'_settings', 'chmg_wapu_product_variation_description_el');
+	
+		/******* End Product Settings Field ********/
+
+
  
 			/******** Start Sheet Mapping Section ********/
 				add_settings_section(
@@ -481,7 +505,22 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
     /***** CALL BACK FUNCTIONS *******/
     function chmg_wapu_settings_section_cb(){
 
-    }
+	}
+	
+
+	function chmg_wapu_product_variation_description_cb(){
+		$chmg_wapu_product_variation_description_el =  get_option('chmg_wapu_product_variation_description_el');
+		?>
+
+		<div class="chmg-wapu-input">
+			<label for="<?php echo esc_attr('chmg_wapu_product_variation_description_el'); ?>">
+				<input <?php echo ("1" ==$chmg_wapu_product_variation_description_el ) ?  "checked" : "" ; ?> name="<?php echo esc_attr('chmg_wapu_product_variation_description_el'); ?>" type="checkbox" id="<?php echo esc_attr('chmg_wapu_product_variation_description_el'); ?>" value="1">
+					Update product variations description</label>
+		</div>
+
+		<?php
+	}
+
 
 	/*============ Start Sheet Mapping  HMTL creation functions ============*/
 		/**

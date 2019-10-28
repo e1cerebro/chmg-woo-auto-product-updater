@@ -1,8 +1,8 @@
 jQuery(document).ready(function($) {
 
-	 $('#submit').on('click', function(){
+	 $('#update-store-btn').on('click', function(){
 		$('#update-store').submit();
-		$(this).hide();
+		$(this).slideDown();
 		$('.processing-img').removeClass('hide-img');
 	 });
 

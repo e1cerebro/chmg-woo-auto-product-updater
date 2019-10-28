@@ -17,7 +17,33 @@
         //get product object
         $product = getProduct($product_id);
 
+        
+
+       $terms = get_the_terms($product_id, 'product_type');
+       
+
+
+   
+    
+ 
+       /*  if( $product_type == 'simple'){
+            echo $product_id.": Simple <br>";
+        }elseif($product_type == 'variable'){
+            echo $product_id.": Variable <br>";
+        } */
+
+
         if(!empty($product)){
+   //$product_type =$terms[0]->name;
+/*    echo "<hr><pre>";
+   echo get_option('chmg_wapu_product_variation_description_el');
+   print_r($product->get_type());
+   echo "</pre>";  */
+
+        
+            $chmg_product_type          = $product->get_type();
+            $chmg_show_variation_desc   = get_option('chmg_wapu_product_variation_description_el');
+            
                 //Set Regular Price
             if('-1' != get_option('chmg_wapu_regular_price_el')){
                 setRegularPrice($product,$data);
@@ -28,16 +54,21 @@
             if('-1' != get_option('chmg_wapu_sales_price_el')){
                 setSalesPrice($product,$data);
             }
-        
-            //Set Regular Price
-            if('-1' != get_option('chmg_wapu_short_description_el')){
-                setShortDescription($product,$data);
+
+            //skip if the user do not approve product variation description to be updated
+            if('variation' == $chmg_product_type &&  strlen($chmg_show_variation_desc) <= 0){
+                 
+            }else{
+
+                if('-1' != get_option('chmg_wapu_short_description_el')){
+                    setShortDescription($product,$data);
+                }
+
+                if('-1' != get_option('chmg_wapu_main_description_el')){
+                    setMainDescription($product,$data);
+                }
             }
-        
-            //Set Regular Price
-            if('-1' != get_option('chmg_wapu_main_description_el')){
-                setMainDescription($product,$data);
-            }
+ 
         }else{
             $status = sprintf("%s", $chmg_wapu_product_name." (".$chmg_product_real_sku.")");
         }
