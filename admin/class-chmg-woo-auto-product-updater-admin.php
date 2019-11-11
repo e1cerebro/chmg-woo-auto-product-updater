@@ -74,6 +74,8 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 		 */
 
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/chmg-woo-auto-product-updater-admin.css', array(), $this->version, 'all' );
+		wp_enqueue_style( $this->plugin_name."-chosen-css", "https://harvesthq.github.io/chosen/chosen.css", array(), '', 'all' );
+
 
 	}
 
@@ -97,20 +99,22 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 		 */
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/chmg-woo-auto-product-updater-admin.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name."-chosen-js","//harvesthq.github.io/chosen/chosen.jquery.js", '', true );
+
 
 	}
 
 	/* Creating the admin menus */
 	public function chmg_wapu_admin_menu(){
 
-		add_menu_page(
-						$page_title = "Woo Sync", 
-						$menu_title = "Woo Sync", 
-						$capability = "manage_options", 
-						$menu_slug  = $this->plugin_name, 
-						$function 	= [$this, 'chmg_wapu_menu_cb'], 
-						$icon_url   = 'dashicons-rest-api', 
-						$position = 58);
+						add_menu_page(
+											$page_title = "Woo Sync", 
+											$menu_title = "Woo Sync", 
+											$capability = "manage_options", 
+											$menu_slug  = $this->plugin_name, 
+											$function 	= [$this, 'chmg_wapu_menu_cb'], 
+											$icon_url   = 'dashicons-rest-api', 
+											$position = 58);
 
 						add_submenu_page( 
 											$parent_slug  = $this->plugin_name, 
@@ -120,36 +124,53 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 											$menu_slug  = $this->plugin_name, 
 											$function 	= [$this, 'chmg_wapu_menu_cb']
 										 );
-						
+ 
+
 						add_submenu_page( 
 											$parent_slug  = $this->plugin_name, 
-											$page_title = "Auto Sync", 
-											$menu_title = "Auto Sync", 
+											$page_title = "Sheet Mapping", 
+											$menu_title = "Sheet Mapping", 
 											$capability = "manage_options", 
-											$menu_slug  = $this->plugin_name.'_automation', 
+											$menu_slug  = $this->plugin_name.'_settings', 
+											$function 	= [$this, 'chmg_wapu_settings_menu_cb']
+										 );
+
+						add_submenu_page( 
+											$parent_slug  = $this->plugin_name, 
+											$page_title = "Product Settings", 
+											$menu_title = "Product Settings", 
+											$capability = "manage_options", 
+											$menu_slug  = 'chmg-woo-auto-product-updater_settings&tab=chmg-woo-product-settings', 
 											$function 	= [$this, 'chmg_wapu_automation_menu_cb']
 										 );
 
 						add_submenu_page( 
 											$parent_slug  = $this->plugin_name, 
-											$page_title = "Authorize Sheet", 
-											$menu_title = "Authorize Sheet", 
+											$page_title = "Notification Settings", 
+											$menu_title = "Notification Settings", 
 											$capability = "manage_options", 
-											$menu_slug  = $this->plugin_name.'_integration', 
+											$menu_slug  = 'chmg-woo-auto-product-updater_settings&tab=chmg-woo-notification-settings', 
+											$function 	= [$this, 'chmg_wapu_automation_menu_cb']
+										 );
+						
+						add_submenu_page( 
+											$parent_slug  = $this->plugin_name, 
+											$page_title = "Authorize Sheet", 
+											$menu_title = "Authorization Settings", 
+											$capability = "manage_options", 
+											$menu_slug  = 'chmg-woo-auto-product-updater_settings&tab=chmg-woo-authorization-settings', 
 											$function 	= [$this, 'chmg_wapu_authorize_menu_cb']
 										 );
 
-					
-
 						add_submenu_page( 
 											$parent_slug  = $this->plugin_name, 
-											$page_title = "Settings", 
-											$menu_title = "Settings", 
+											$page_title = "Auto Sync", 
+											$menu_title = "Auto Sync Settings", 
 											$capability = "manage_options", 
-											$menu_slug  = $this->plugin_name.'_settings', 
-											$function 	= [$this, 'chmg_wapu_settings_menu_cb']
+											$menu_slug  = 'chmg-woo-auto-product-updater_settings&tab=chmg-woo-cron-job-settings', 
+											$function 	= [$this, 'chmg_wapu_automation_menu_cb']
 										 );
-						
+
  	}
 	
 	 /**
@@ -198,6 +219,8 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 	 * @return void
 	 */
 	public function chmg_wapu_authorize_settings_options(){
+
+		
 
 		/******** SECTION SETTINGS ********/
 		add_settings_section(
@@ -269,234 +292,23 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 	 */
 	public function chmg_wapu_sheet_settings_options(){
 
-		/******** Start Product Setting Section ********/
-			add_settings_section(
-				'chmg_wapu_product_settings_section',
-				__( 'Product Settings', TEXT_DOMAIN ),
-				[$this, 'chmg_wapu_settings_section_cb'],
-				$this->plugin_name.'_settings'
-			);
-		/******** End Product Setting Section ********/
 
-		/******* Start Product Settings Field ********/
-			/*====== PRODUCT SKU SETTINGS ======*/
-			add_settings_field(
-				'chmg_wapu_product_variation_description_el',
-				__( 'Product Variation Description', TEXT_DOMAIN),
-				[$this,'chmg_wapu_product_variation_description_cb'],
-				$this->plugin_name.'_settings',
-				'chmg_wapu_product_settings_section'
-			);
-			register_setting( $this->plugin_name.'_settings', 'chmg_wapu_product_variation_description_el');
-	
-		/******* End Product Settings Field ********/
+		include_once( 'partials/chmg-woo-settings-api/chmg-woo-product-settings.php' );
+		include_once( 'partials/chmg-woo-settings-api/chmg-woo-sheet-mapping-settings.php' );
+		include_once( 'partials/chmg-woo-settings-api/chmg-woo-notification-settings.php' );
+		include_once( 'partials/chmg-woo-settings-api/chmg-woo-cron-settings.php' );
 
+		$product_settings = new CHMG_WOO_PRODUCT_SETTINGS($this->plugin_name);
+		$sheet_settings = new CHMG_WOO_SHEET_MAPPING_SETTINGS($this->plugin_name);
+		$notification_settings = new CHMG_WOO_NOTIFICATION_SETTINGS($this->plugin_name);
+		$cron_job_settings = new CHMG_WOO_CRON_SETTINGS($this->plugin_name);
 
- 
-			/******** Start Sheet Mapping Section ********/
-				add_settings_section(
-					'chmg_wapu_section',
-					__( 'Map Sheet To Columns', TEXT_DOMAIN ),
-					[$this, 'chmg_wapu_settings_section_cb'],
-					$this->plugin_name.'_settings'
-				);
-			
-			/******** End Sheet Mapping Section ********/
-			
-			/******* Start Sheet Mapping Field ********/
-				/*====== PRODUCT SKU SETTINGS ======*/
-				add_settings_field(
-					'chmg_wapu_product_sku_el',
-					__( 'Product SKU', TEXT_DOMAIN),
-					[$this,'chmg_wapu_product_sku_cb'],
-					$this->plugin_name.'_settings',
-					'chmg_wapu_section'
-				);
-				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_product_sku_el');
-		
-				/*====== MAP PRICE SETTINGS ======*/
-				add_settings_field(
-					'chmg_wapu_map_price_el',
-					__( 'MAP Price', TEXT_DOMAIN),
-					[$this,'chmg_wapu_map_price_cb'],
-					$this->plugin_name.'_settings',
-					'chmg_wapu_section'
-				);
-				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_map_price_el');
+		$chmg_woo_object_settings = [$product_settings, $sheet_settings, $notification_settings, $cron_job_settings];
 
-				/*====== Swap MAP with regular price when product is on sale ======*/
-				add_settings_field(
-					'chmg_wapu_set_map_price_el',
-					__( 'MAP &#10152; Regular Price', TEXT_DOMAIN),
-					[$this,'chmg_wapu_set_map_price_cb'],
-					$this->plugin_name.'_settings',
-					'chmg_wapu_section'
-					);
-				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_set_map_price_el');
-	
-
-				/*====== PRODUCT NAME SETTINGS ======*/
-				add_settings_field(
-					'chmg_wapu_product_name_el',
-					__( 'Product Name', TEXT_DOMAIN),
-					[$this,'chmg_wapu_product_name_cb'],
-				$this->plugin_name.'_settings',
-					'chmg_wapu_section'
-				);
-				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_product_name_el');
-
-
-				/*====== REGULAR PRICE SETTINGS ======*/
-				add_settings_field(
-					'chmg_wapu_regular_price_el',
-					__( 'Regular Price', TEXT_DOMAIN),
-					[$this,'chmg_wapu_regular_price_cb'],
-				$this->plugin_name.'_settings',
-					'chmg_wapu_section'
-				);
-				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_regular_price_el');
-
-				/*====== SALES PRICE SETTINGS ======*/
-				add_settings_field(
-					'chmg_wapu_sales_price_el',
-					__( 'Sales Price', TEXT_DOMAIN),
-					[$this,'chmg_wapu_sales_price_cb'],
-					$this->plugin_name.'_settings',
-					'chmg_wapu_section'
-				);
-				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_sales_price_el');
-	
-
-				/*====== SHORT DESCRIPTION SETTINGS ======*/
-				add_settings_field(
-					'chmg_wapu_short_description_el',
-					__( 'Short Description', TEXT_DOMAIN),
-					[$this,'chmg_wapu_short_description_cb'],
-					$this->plugin_name.'_settings',
-					'chmg_wapu_section'
-				);
-				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_short_description_el');
-	
-				/*====== MAIN DESCRIPTION SETTINGS ======*/
-				add_settings_field(
-					'chmg_wapu_main_description_el',
-					__( 'Main Description', TEXT_DOMAIN),
-					[$this,'chmg_wapu_main_description_cb'],
-					$this->plugin_name.'_settings',
-					'chmg_wapu_section'
-					);
-				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_main_description_el');
-
-				/*====== ON SALE INDICATOR SETTINGS ======*/
-				add_settings_field(
-					'chmg_wapu_on_sale_el',
-					__( 'On Sale Indicator', TEXT_DOMAIN),
-					[$this,'chmg_wapu_on_sale_cb'],
-					$this->plugin_name.'_settings',
-					'chmg_wapu_section'
-					);
-				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_on_sale_el');
-				
-				/*====== SKIP PRODUCT SETTINGS ======*/
-				add_settings_field(
-					'chmg_wapu_skip_product_el',
-					__( 'Ignore Product', TEXT_DOMAIN),
-					[$this,'chmg_wapu_skip_product_cb'],
-					$this->plugin_name.'_settings',
-					'chmg_wapu_section'
-					);
-				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_skip_product_el');
-			/******* End Sheet Mapping Field ********/
-
-			/******** Start Cron Job Section ********/
-				add_settings_section(
-					'chmg_wapu_cron_section',
-					__( 'Cron Jobs', TEXT_DOMAIN ),
-					[$this, 'chmg_wapu_settings_section_cb'],
-					$this->plugin_name.'_automation'
-				);
-			/******** End Cron Job Section ********/
-
-			/******** Start Cron Job Field ********/
-
-				/*====== Enable Cron Jobs ======*/
-				add_settings_field(
-					'chmg_wapu_enable_cron_jobs_el',
-					__( 'Enable Cron Jobs', TEXT_DOMAIN),
-					[$this,'chmg_wapu_enable_cron_jobs_cb'],
-					$this->plugin_name.'_automation',
-					'chmg_wapu_cron_section'
-					);
-				register_setting( $this->plugin_name.'_automation', 'chmg_wapu_enable_cron_jobs_el');
-	
-				/*====== Execution Interval ======*/
-				add_settings_field(
-					'chmg_wapu_choose_interval_el',
-					__( 'Execution Interval', TEXT_DOMAIN),
-					[$this,'chmg_wapu_choose_interval_cb'],
-					$this->plugin_name.'_automation',
-					'chmg_wapu_cron_section'
-					);
-				register_setting( $this->plugin_name.'_automation', 'chmg_wapu_choose_interval_el', [$this, 'chmg_wapu_choose_interval_sanitize']);
-			
-			/******** End Cron Job Field ********/
-
-			/******** Start Mailing Section ********/
-				add_settings_section(
-					'chmg_wapu_mailing_notification_section',
-					__( 'Mailing/Notification', TEXT_DOMAIN ),
-					[$this, 'chmg_wapu_settings_section_cb'],
-					$this->plugin_name.'_settings'
-				);
-		   /******** End Mailing Section ********/
-
-
-			/******** Start Notification Field ********/
-				add_settings_field(
-					'chmg_wapu_manual_sync_notification_el',
-					__( 'Manual Sync Notification', TEXT_DOMAIN),
-					[$this,'chmg_wapu_manual_sync_notification_cb'],
-					$this->plugin_name.'_settings',
-					'chmg_wapu_mailing_notification_section'
-					);
-				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_manual_sync_notification_el');
-
-			/******** End Notification Field ********/
-
-
-			/******** Start Auto Sync Notification Field ********/
-				add_settings_field(
-					'chmg_wapu_auto_sync_notification_el',
-					__( 'Auto Sync Notification', TEXT_DOMAIN),
-					[$this,'chmg_wapu_auto_sync_notification_cb'],
-					$this->plugin_name.'_settings',
-					'chmg_wapu_mailing_notification_section'
-					);
-				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_auto_sync_notification_el');
-			/******** End Auto Sync Notification Field ********/
-
-			/******** Start Notification Field ********/
-				add_settings_field(
-					'chmg_wapu_mail_recipient_el',
-					__( 'Email Recipient', TEXT_DOMAIN),
-					[$this,'chmg_wapu_mail_recipient_cb'],
-					$this->plugin_name.'_settings',
-					'chmg_wapu_mailing_notification_section'
-					);
-				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_mail_recipient_el');
-
-			/******** End Notification Field ********/
-			
-			/******** Start Notification Field ********/
-				add_settings_field(
-					'chmg_wapu_email_who_el',
-					__( 'Email Filter', TEXT_DOMAIN),
-					[$this,'chmg_wapu_email_who_cb'],
-					$this->plugin_name.'_settings',
-					'chmg_wapu_mailing_notification_section'
-					);
-				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_email_who_el');
-			/******** End Notification Field ********/
+		foreach($chmg_woo_object_settings as $settings_object){
+			$settings_object->register_section();
+			$settings_object->register_fields();
+		}
 
 	}
 
@@ -522,273 +334,8 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 	}
 
 
-	/*============ Start Sheet Mapping  HMTL creation functions ============*/
-		/**
-		 * Create the HTML for the product SKU
-		 *
-		 * @return void
-		 */ 
-		function chmg_wapu_product_sku_cb(){
-			$chmg_wapu_product_sku_el =  get_option('chmg_wapu_product_sku_el');
-			?>
-
-			<div class="chmg-wapu-input">
-				<select name="<?php echo esc_attr('chmg_wapu_product_sku_el'); ?>" id="<?php echo esc_attr('chmg_wapu_product_sku_el'); ?>">
-					<?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
-						<?php if( '-1' == $key): ?>	
- 						<?php else: ?>
-							<option <?php echo ($chmg_wapu_product_sku_el== $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>	
-						<?php endif ?>					<?php endforeach; ?>
-				</select>
-			</div>
-
-			<?php
-		}
-		
-		/**
-		 * Create the MAP price HTML
-		 *
-		 * @return void
-		 */
-		function chmg_wapu_map_price_cb(){
-			$chmg_wapu_map_price_el =  get_option('chmg_wapu_map_price_el');
-			?>
-
-			<div class="chmg-wapu-input">
-				<select name="<?php echo esc_attr('chmg_wapu_map_price_el'); ?>">
-					<?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
-						<?php if( '-1' == $key): ?>	
- 						<?php else: ?>
-							<option <?php echo ($chmg_wapu_map_price_el== $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>	
-						<?php endif ?>
-					<?php endforeach; ?>
-				</select>
-			</div>
-	
-			<?php
-		}
-		
-		/**
-		 * Generate the HTML for Regular Price
-		 *
-		 * @return void
-		 */ 
-		function chmg_wapu_product_name_cb(){
-			$chmg_wapu_product_name_el =  get_option('chmg_wapu_product_name_el');
-			?>
-
-			<div class="chmg-wapu-input">
-				<select name="<?php echo esc_attr('chmg_wapu_product_name_el'); ?>">
-					<?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
-						<?php if( '-1' == $key): ?>	
- 						<?php else: ?>
-							<option <?php echo ($chmg_wapu_product_name_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>	
-						<?php endif ?>					
-					<?php endforeach; ?>
-				</select>
-			</div>
-	
-			<?php
-		}
-
-		/**
-		 * Generate the HTML for Regular Price
-		 *
-		 * @return void
-		 */ 
-		function chmg_wapu_regular_price_cb(){
-			$chmg_wapu_regular_price_el =  get_option('chmg_wapu_regular_price_el');
-			?>
-
-			<div class="chmg-wapu-input">
-				<select name="<?php echo esc_attr('chmg_wapu_regular_price_el'); ?>">
-					<?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
-						<?php if( '-1' == $key): ?>	
-							<option <?php echo ($chmg_wapu_regular_price_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo $value; ?></option>
-						<?php else: ?>
-							<option <?php echo ($chmg_wapu_regular_price_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>	
-						<?php endif ?>					<?php endforeach; ?>
-				</select>
-			</div>
-	
-			<?php
-		}
-
-		/**
-		 * Create HTML for sales price
-		 *
-		 * @return void
-		 */
-		function chmg_wapu_sales_price_cb(){
-			$chmg_wapu_sales_price_el =  get_option('chmg_wapu_sales_price_el');
-			?>
-	
-			<div class="chmg-wapu-input">
-				<select name="<?php echo esc_attr('chmg_wapu_sales_price_el'); ?>">
-					<?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
-						<?php if( '-1' == $key): ?>	
-							<option <?php echo ($chmg_wapu_sales_price_el== $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo $value; ?></option>
-						<?php else: ?>
-							<option <?php echo ($chmg_wapu_sales_price_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>	
-						<?php endif ?>						
-					<?php endforeach; ?>
-				</select>
-			</div>
-	
-			<?php
-		}
-
-		/**
-		 * Create HTML for short description
-		 *
-		 * @return void
-		 */
-		function chmg_wapu_short_description_cb(){
-			$chmg_wapu_short_description_el =  get_option('chmg_wapu_short_description_el');
-			?>
-	
-			<div class="chmg-wapu-input">
-				<select name="<?php echo esc_attr('chmg_wapu_short_description_el'); ?>">
-					<?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
-						<?php if( '-1' == $key): ?>	
-							<option <?php echo ($chmg_wapu_short_description_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo $value; ?></option>
-						<?php else: ?>
-							<option <?php echo ($chmg_wapu_short_description_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>	
-						<?php endif ?>						
-					<?php endforeach; ?>
-				</select>
-			</div>
-	
-			<?php
-		}
-
-		/**
-		 * Create HTML for Main Description
-		 *
-		 * @return void
-		 */
-		function chmg_wapu_main_description_cb(){
-			$chmg_wapu_main_description_el =  get_option('chmg_wapu_main_description_el');
-			?>
-	
-			<div class="chmg-wapu-input">
-				<select name="<?php echo esc_attr('chmg_wapu_main_description_el'); ?>">
-					<?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
-						<?php if( '-1' == $key): ?>	
-							<option <?php echo ($chmg_wapu_main_description_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo $value; ?></option>
-						<?php else: ?>
-							<option <?php echo ($chmg_wapu_main_description_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>	
-						<?php endif ?>
-					<?php endforeach; ?>
-				</select>
-			</div>
-	
-			<?php
-		}
-	
-		/**
-		 * Create HTML for the on sale indicator
-		 *
-		 * @return void
-		 */
-		function chmg_wapu_on_sale_cb(){
-			$chmg_wapu_on_sale_el =  get_option('chmg_wapu_on_sale_el');
-			?>
-	
-			<div class="chmg-wapu-input">
-				<select name="<?php echo esc_attr('chmg_wapu_on_sale_el'); ?>">
-					<?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
-						<?php if( '-1' == $key): ?>	
-						<option <?php echo ($chmg_wapu_on_sale_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo $value; ?></option>	
- 						<?php else: ?>
-							<option <?php echo ($chmg_wapu_on_sale_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>	
-						<?php endif ?>					
-					<?php endforeach; ?>
-				</select>
-			</div>
-	
-			<?php
-		}
-	
-		/**
-		 * Create HTM for the skip product indicator
-		 *
-		 * @return void
-		 */ 
-		function chmg_wapu_skip_product_cb(){
-			$chmg_wapu_skip_product_el =  get_option('chmg_wapu_skip_product_el');
-			?>
-	
-			<div class="chmg_wapu_input">
-				<select name="<?php echo esc_attr('chmg_wapu_skip_product_el'); ?>">
-					<?php foreach( ALPHABETS_MAPPING as $key => $value): ?>
-						<?php if( '-1' != $key): ?>	
-							<option <?php echo ($chmg_wapu_skip_product_el== $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo 'Map to column - '.$value; ?></option>	
-						<?php else: ?>
-							<option <?php echo ($chmg_wapu_skip_product_el== $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo "<strong>".$value."</strong>"; ?></option>	
-						<?php endif ?>
-					<?php endforeach; ?>
-				</select>
-			</div>
-	
-			<?php
-		}
 
 
-	/*============ End Sheet Mapping HMTL creation functions ============*/
-
-	/*============ Start Notification  HMTL creation functions ============*/	
-		function chmg_wapu_auto_sync_notification_cb(){
-			$chmg_wapu_auto_sync_notification_el =  get_option('chmg_wapu_auto_sync_notification_el');
-			?>
-
-			<div class="chmg-wapu-input">
-				<label for="<?php echo esc_attr('chmg_wapu_auto_sync_notification_el'); ?>">
-					<input <?php echo ("1" == $chmg_wapu_auto_sync_notification_el ) ?  "checked" : "" ; ?> name="<?php echo esc_attr('chmg_wapu_auto_sync_notification_el'); ?>" type="checkbox" id="<?php echo esc_attr('chmg_wapu_auto_sync_notification_el'); ?>" value="1">
-						Enable Notification</label>
-			</div>
-
-			<?php
-		}
-		function chmg_wapu_manual_sync_notification_cb(){
-			$chmg_wapu_manual_sync_notification_el =  get_option('chmg_wapu_manual_sync_notification_el');
-			?>
-
-			<div class="chmg-wapu-input">
-				<label for="<?php echo esc_attr('chmg_wapu_manual_sync_notification_el'); ?>">
-					<input <?php echo ("1" == $chmg_wapu_manual_sync_notification_el ) ?  "checked" : "" ; ?> name="<?php echo esc_attr('chmg_wapu_manual_sync_notification_el'); ?>" type="checkbox" id="<?php echo esc_attr('chmg_wapu_manual_sync_notification_el'); ?>" value="1">
-						Enable Notification</label>
-			</div>
-
-			<?php
-		}
-
-		function chmg_wapu_mail_recipient_cb(){
-			$chmg_wapu_mail_recipient_el =  get_option('chmg_wapu_mail_recipient_el');
-			?>
-
-			<div class="chmg-wapu-input">
-					<input class="regular-text"  name="<?php echo esc_attr('chmg_wapu_mail_recipient_el'); ?>" type="text" id="<?php echo esc_attr('chmg_wapu_mail_recipient_el'); ?>" value="<?php echo esc_attr($chmg_wapu_mail_recipient_el); ?>">
-			</div>
-
-			<?php
-		}
-
-		function chmg_wapu_email_who_cb(){
-			$chmg_wapu_email_who_el =  get_option('chmg_wapu_email_who_el');
-			?>
-
-			<div class="chmg-wapu-input">
-				<select name="<?php echo esc_attr('chmg_wapu_email_who_el'); ?>">
-						<option <?php echo ( 'admin_only' == $chmg_wapu_email_who_el ) ?  "selected" : "" ; ?> value="admin_only" ><?php echo esc_html('Admin Only', TEXT_DOMAIN); ?></option>
-						<option <?php echo ( 'admin_and_others' == $chmg_wapu_email_who_el ) ?  "selected" : "" ; ?> value="admin_and_others" ><?php echo esc_html('Admin & Others', TEXT_DOMAIN); ?></option>
-						<option <?php echo ( 'others_only' == $chmg_wapu_email_who_el ) ?  "selected" : "" ; ?> value="others_only" ><?php echo esc_html('Others Only', TEXT_DOMAIN); ?></option>
- 				</select>
-			</div>
-
-			<?php
-		}
- 	/*============ End Notification  HMTL creation functions ============*/	
 
 
 	/*====== START GENERAL SETTINGS HTML FIELDS FUNCTIONS======*/
@@ -803,18 +350,6 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 			<?php
 		}
 
-		function chmg_wapu_set_map_price_cb(){
-			$chmg_wapu_set_map_price_el =  get_option('chmg_wapu_set_map_price_el');
-			?>
-
-			<div class="chmg-wapu-input">
-				<label for="<?php echo esc_attr('chmg_wapu_set_map_price_el'); ?>">
-					<input <?php echo ("1" == $chmg_wapu_set_map_price_el ) ?  "checked" : "" ; ?> name="<?php echo esc_attr('chmg_wapu_set_map_price_el'); ?>" type="checkbox" id="<?php echo esc_attr('chmg_wapu_set_map_price_el'); ?>" value="1">
-						Show MAP price when product is on sale</label>
-			</div>
-
-			<?php
-		}
 
 		function chmg_wapu_default_sheet_names_cb(){
 			$chmg_wapu_default_sheet_names_el =  get_option('chmg_wapu_default_sheet_names_el');
@@ -831,34 +366,7 @@ class Chmg_Woo_Auto_Product_Updater_Admin {
 	/*======END GENERAL SETTINGS FIELDS FUNCTIONS======*/
 
 
-	/*====== START CRON JOBS SETTINGS HTML FIELDS FUNCTIONS======*/
-		function chmg_wapu_enable_cron_jobs_cb(){
-			$chmg_wapu_enable_cron_jobs_el =  get_option('chmg_wapu_enable_cron_jobs_el');
-			?>
 
-			<div class="chmg-wapu-input">
-				<label for="<?php echo esc_attr('chmg_wapu_enable_cron_jobs_el'); ?>">
-					<input <?php echo ("1" == $chmg_wapu_enable_cron_jobs_el ) ?  "checked" : "" ; ?> name="<?php echo esc_attr('chmg_wapu_enable_cron_jobs_el'); ?>" type="checkbox" id="<?php echo esc_attr('chmg_wapu_enable_cron_jobs_el'); ?>" value="1">
-						Toggle this to enable/disable cron jobs</label>
-			</div>
-
-			<?php
-		}
-		
-		function chmg_wapu_choose_interval_cb(){
-			$chmg_wapu_choose_interval_el =  get_option('chmg_wapu_choose_interval_el');
-			?>
-
-			<div class="chmg-wapu-input">
-				<select name="<?php echo esc_attr('chmg_wapu_choose_interval_el'); ?>">
-					<?php foreach( CRON_INTERVALS as $key => $value): ?>
-						<option <?php echo ($chmg_wapu_choose_interval_el == $key ) ?  "selected" : "" ; ?> value="<?php echo $key; ?>"><?php echo $value; ?></option>
-					<?php endforeach; ?>
-				</select>
-			</div>
-
-			<?php
-		}
 		
 		function chmg_wapu_choose_interval_sanitize($chmg_wapu_new_interval){
 

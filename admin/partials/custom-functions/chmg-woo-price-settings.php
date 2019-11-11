@@ -1,14 +1,58 @@
 <?php
 
 
+    function exclude_category($product){
+
+        if(!empty($product)){
+            
+           $product_type  = $product->get_type();
+
+             if('variation' == $product_type){
+
+                //get the ID of the parent category
+                $parent_id = $product->get_parent_id();
+
+                //get the parent product objecrt
+                $parent_product = getProduct($parent_id);
+
+                //get the parent product categories
+                $product_categories = $parent_product->get_categories();
+
+              
+
+            }elseif('simple' == $product_type){
+                $product_categories = $product->get_categories();
+ 
+            } else{
+                return 0;
+            }
+
+            
+            $chmg_wapu_excluded_cats = array_map('trim', get_option('chmg_wapu_exclude_categories_el'));
+            $chmg_wapu_product_cat = explode(",", strip_tags($product_categories));
+            $chmg_wapu_product_cat = array_map('trim', $chmg_wapu_product_cat);
+
+            
+         
+            $status =  !empty(array_intersect( $chmg_wapu_product_cat , $chmg_wapu_excluded_cats)) ? 1 : 0;  
+
+            return  $status;
+        } else{
+            return 1;
+        }
+    }
+
     function processData($data){
 
         //Get product Id using the SKU
         $chmg_wapu_sku = get_option('chmg_wapu_product_sku_el');
+ 
         $chmg_wapu_product_name_key = get_option('chmg_wapu_product_name_el');
 
         $chmg_product_real_sku  = $data[$chmg_wapu_sku];
         $chmg_wapu_product_name = $data[$chmg_wapu_product_name_key];
+     
+
 
         $status = '';
 
@@ -18,47 +62,47 @@
         //get product object
         $product = getProduct($product_id);
 
-        
+        $exclude_categories_status =  exclude_category($product);
 
-       $terms = get_the_terms($product_id, 'product_type');
-       
+        if(!$exclude_categories_status){
+                $terms = get_the_terms($product_id, 'product_type');
+                
+                    if(!empty($product)){
+                    
+                        $chmg_product_type          = $product->get_type();
+                        $chmg_show_variation_desc   = get_option('chmg_wapu_product_variation_description_el');
+                        
+                            //Set Regular Price
+                        if('-1' != get_option('chmg_wapu_regular_price_el')){
+                            setRegularPrice($product,$data);
+                        }
+                
 
-        if(!empty($product)){
-        
-            $chmg_product_type          = $product->get_type();
-            $chmg_show_variation_desc   = get_option('chmg_wapu_product_variation_description_el');
+                        //Set Regular Price
+                        if('-1' != get_option('chmg_wapu_sales_price_el')){
+                            setSalesPrice($product,$data);
+                        }
+
+                        //skip if the user do not approve product variation description to be updated
+                        if('variation' == $chmg_product_type &&  strlen($chmg_show_variation_desc) <= 0){
+                            
+                        }else{
+
+                            if('-1' != get_option('chmg_wapu_short_description_el')){
+                                setShortDescription($product,$data);
+                            }
+
+                            if('-1' != get_option('chmg_wapu_main_description_el')){
+                                setMainDescription($product,$data);
+                            }
+                        }
             
-                //Set Regular Price
-            if('-1' != get_option('chmg_wapu_regular_price_el')){
-                setRegularPrice($product,$data);
-            }
-    
-
-            //Set Regular Price
-            if('-1' != get_option('chmg_wapu_sales_price_el')){
-                setSalesPrice($product,$data);
-            }
-
-            //skip if the user do not approve product variation description to be updated
-            if('variation' == $chmg_product_type &&  strlen($chmg_show_variation_desc) <= 0){
-                 
-            }else{
-
-                if('-1' != get_option('chmg_wapu_short_description_el')){
-                    setShortDescription($product,$data);
-                }
-
-                if('-1' != get_option('chmg_wapu_main_description_el')){
-                    setMainDescription($product,$data);
-                }
-            }
- 
-        }else{
-            $status = sprintf("%s", $chmg_wapu_product_name." (".$chmg_product_real_sku.")");
-        }
+                    }else{
+                        $status = sprintf("%s", $chmg_wapu_product_name." (".$chmg_product_real_sku.")");
+                    }
+       }
 
         return $status;
-
     }
 
 
@@ -103,9 +147,9 @@
         
         if('-1' != $chmg_wapu_ignore_sale_key){
              //Check if ignore sale price is on
-            if('yes' == $chmg_wapu_ignore_sale){
+            if('yes' == $chmg_wapu_ignore_sale ){
                 $sales_price = '';
-            }else{
+            }elseif('no' == $chmg_wapu_ignore_sale || empty($chmg_wapu_ignore_sale)){
                 $sales_price = $data_array[$chmg_wapu_sale_price];
             }
         }else{

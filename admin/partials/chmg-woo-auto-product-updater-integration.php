@@ -41,9 +41,7 @@
 ?>
 
 <div class="wrap">
-    
-    <?php settings_errors(); ?>
-    <h1><?php echo get_admin_page_title(); ?></h1>
+ 
 
     <?php
         $chmg_wapu_access_token = get_option('chmg_wapu_api_token_el');
@@ -73,16 +71,12 @@
 
     ?>
  <form method="post" action="">
-            <?php  
-             //if(strlen($chmg_wapu_access_token) > 0 && confirmSheetSync()){
-                $other_attributes = array( 'id' => 'chmg_wapu_disconnect' );
-                submit_button( 'Disconnect Google Sheet', 'delete', 'chmg_wapu_disconnect', true, $other_attributes );
-
-                
-            // }
-            ?>
-            
-        </form>
+    <?php  
+        $other_attributes = array( 'id' => 'chmg_wapu_disconnect' );
+        submit_button( 'Disconnect Google Sheet', 'delete', 'chmg_wapu_disconnect', true, $other_attributes );
+    ?>
+    
+</form>
 
 </div>
 

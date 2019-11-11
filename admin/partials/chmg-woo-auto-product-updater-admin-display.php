@@ -73,7 +73,6 @@ if(isset($_POST['submit'])){
                 echo "<div class='error notice'>
                         <p>".$e->getMessage()."</p>
                     </div>";
-                
             }
 
             /* Check if any values were returned */
@@ -92,7 +91,7 @@ if(isset($_POST['submit'])){
                                 array_push($products_non_exits_arr, $response);
                             }
 
-                        }elseif('no' == $chmg_wapu_skip){
+                        }elseif('no' == $chmg_wapu_skip || empty($chmg_wapu_skip)){
                             $response = processData($row);
 
                             if(!empty($response)){
