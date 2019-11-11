@@ -14,6 +14,7 @@
 
         $product_id = wc_get_product_id_by_sku($chmg_product_real_sku);
 
+
         //get product object
         $product = getProduct($product_id);
 
@@ -22,24 +23,7 @@
        $terms = get_the_terms($product_id, 'product_type');
        
 
-
-   
-    
- 
-       /*  if( $product_type == 'simple'){
-            echo $product_id.": Simple <br>";
-        }elseif($product_type == 'variable'){
-            echo $product_id.": Variable <br>";
-        } */
-
-
         if(!empty($product)){
-   //$product_type =$terms[0]->name;
-/*    echo "<hr><pre>";
-   echo get_option('chmg_wapu_product_variation_description_el');
-   print_r($product->get_type());
-   echo "</pre>";  */
-
         
             $chmg_product_type          = $product->get_type();
             $chmg_show_variation_desc   = get_option('chmg_wapu_product_variation_description_el');
@@ -138,7 +122,8 @@
 
         $chmg_wapu_short_description =   get_option('chmg_wapu_short_description_el');
 
-        $short_description = $data_array[$chmg_wapu_short_description];
+       
+        $short_description = removeNewLine($data_array[$chmg_wapu_short_description]);
 
         $product->set_short_description($short_description);
 
@@ -148,7 +133,7 @@
     function setMainDescription($product , $data_array){
 
         $chmg_wapu_main_description =   get_option('chmg_wapu_main_description_el');
-        $main_description = $data_array[$chmg_wapu_main_description];
+        $main_description = removeNewLine($data_array[$chmg_wapu_main_description]);
 
         $product->set_description($main_description);
 
@@ -156,5 +141,9 @@
     }
 
     function getProduct($product_id){
-        return $product = wc_get_product( $product_id );
+        return  wc_get_product( $product_id );
+    }
+
+    function removeNewLine($string){
+        return str_replace("\\n","",$string);
     }
