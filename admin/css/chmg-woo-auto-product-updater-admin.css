@@ -1,4 +1,21 @@
-.hide-img
-{
+.hide-img {
     display: none;
+}
+
+form#update-store {
+    background-color: #fff;
+    width: 80%;
+    margin: 0 auto;
+    padding: 47px 20px;
+}
+
+.wrap.sync-container h1 {
+    margin: 10px auto;
+    text-align: center;
+}
+
+input#update-store-btn {
+    padding: 23px 41px;
+    line-height: 0px;
+    font-size: 16px;
 }

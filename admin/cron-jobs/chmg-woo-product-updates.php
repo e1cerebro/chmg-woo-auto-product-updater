@@ -24,7 +24,6 @@ require_once plugin_dir_path( __FILE__ ).'../partials/custom-functions/chmg-woo-
      try {
          $sheets   = $service->spreadsheets->get($spreadsheetId)[sheets];
      } catch (Exception $e) {
-
         $message = $e->getMessage().date('Y-m-s H:i:s');
         ChmgWapuEmail::send_error_mail($message);
      }
@@ -33,9 +32,11 @@ require_once plugin_dir_path( __FILE__ ).'../partials/custom-functions/chmg-woo-
  
  if(!empty($sheets)){
 
+    //array to hold products not found while updating store
     $products_non_exits_arr = [];
+    $chmg_wapu_exclude_categories_el =  get_option('chmg_wapu_exclude_categories_el');
 
-     /* Loop through the sheet names */
+    /* Loop through the sheet names */
     foreach ($sheets as $row){
 
          if(!empty($custom_sheets)){
@@ -56,19 +57,19 @@ require_once plugin_dir_path( __FILE__ ).'../partials/custom-functions/chmg-woo-
          /* Check if any values were returned */
          if(!empty($values)){
              foreach ($values as $key => $row){
-                 /* Skip the first row */
+                 /* Skip the first row - we dont need to loop through the row that have column names*/
                  if($key != 0 ){
  
                      $chmg_wapu_skip_key = get_option('chmg_wapu_skip_product_el');
                      $chmg_wapu_skip = $row[$chmg_wapu_skip_key];
  
                      if('-1' == $chmg_wapu_skip_key){
-                        $response =  processData($row);
+                        $response =  processData($row, $chmg_wapu_exclude_categories_el , true);
                         if(!empty($response)){
                             array_push($products_non_exits_arr, $response);
                         }
                     }elseif('no' == $chmg_wapu_skip){
-                        $response = processData($row);
+                        $response = processData($row, $chmg_wapu_exclude_categories_el , true);
                         if(!empty($response)){
                             array_push($products_non_exits_arr, $response);
                         }
@@ -87,7 +88,7 @@ require_once plugin_dir_path( __FILE__ ).'../partials/custom-functions/chmg-woo-
 
     /* Send the email to the customer */
     if('1' == get_option('chmg_wapu_auto_sync_notification_el')){
-        ChmgWapuEmail::send_sync_complete_mail($products_non_exits_arr);
+        ChmgWapuEmail::send_sync_complete_mail($products_non_exits_arr, true);
     }
 
  }else{

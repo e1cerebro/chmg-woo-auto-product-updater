@@ -17,6 +17,7 @@ class CHMG_WOO_PRODUCT_SETTINGS{
             $this->plugin_name.'-product-settings'
         );
      }
+     
      public function register_fields(){
 		
 		add_settings_field(
@@ -28,14 +29,7 @@ class CHMG_WOO_PRODUCT_SETTINGS{
         );
         register_setting(  $this->plugin_name.'-product-settings', 'chmg_wapu_product_variation_description_el');
 		
-		add_settings_field(
-            'chmg_wapu_exclude_categories_el',
-            __( 'Exclude Categories', TEXT_DOMAIN),
-            [$this,'chmg_wapu_exclude_categories_cb'],
-            $this->plugin_name.'-product-settings',
-            'chmg_wapu_product_settings_section'
-        );
-        register_setting(  $this->plugin_name.'-product-settings', 'chmg_wapu_exclude_categories_el');
+		 
      }
 	 
 	 	/* ---------- START CARD BLOCK HTML FIELDS --------------- */
@@ -52,23 +46,5 @@ class CHMG_WOO_PRODUCT_SETTINGS{
             <?php
         }
 
-
-        public function chmg_wapu_exclude_categories_cb(){
-           
-            $chmg_wapu_exclude_categories_el =  get_option('chmg_wapu_exclude_categories_el');
-            ?>
-    
-            <div class="chmg-wapu-input">
-
-                <select  data-placeholder="Choose categories..." class="chosen-select" name="chmg_wapu_exclude_categories_el[]" multiple >
-                    <?php foreach(CHMG_WOO_DB_Utils::get_all_product_categories() as $cat): ?>
-                        <option <?php echo @in_array($cat->name, $chmg_wapu_exclude_categories_el) ? 'SELECTED' : ''; ?>  value="<?php echo $cat->name; ?>"><?php echo $cat->name; ?></option>
-                    <?php endforeach; ?>
-                </select>
-
-            </div>
-    
-            <?php
-        }
 	/* ---------- END CARD BLOCK HTML FIELDS --------------- */
 }

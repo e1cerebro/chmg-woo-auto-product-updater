@@ -15,6 +15,8 @@
 require_once __DIR__ .'/custom-functions/chmg-woo-google-utils.php';
 require_once __DIR__ .'/custom-functions/chmg-woo-price-settings.php';
 require_once __DIR__ .'/custom-functions/chmg-woo-process-emails.php';
+require_once __DIR__ .'/custom-functions/chmg-woo-db-utils.php';
+
 
 
 if(isset($_POST['submit'])){
@@ -24,6 +26,8 @@ if(isset($_POST['submit'])){
 
     /* Get  the sheetID from the form input */
     $custom_sheetID = trim($_POST['chmg_wapu_sheet_id']);
+
+    $chmg_wapu_exclude_categories_el = $_POST['chmg_wapu_exclude_categories_el'];
 
     /* Decide which of the sheetID to use */
     if(!empty($custom_sheetID)){
@@ -85,14 +89,14 @@ if(isset($_POST['submit'])){
                         $chmg_wapu_skip = $row[$chmg_wapu_skip_key];
                      
                         if('-1' == $chmg_wapu_skip_key){
-                            $response = processData($row);
+                            $response = processData($row, $chmg_wapu_exclude_categories_el);
 
                             if(!empty($response)){
                                 array_push($products_non_exits_arr, $response);
                             }
 
                         }elseif('no' == $chmg_wapu_skip || empty($chmg_wapu_skip)){
-                            $response = processData($row);
+                            $response = processData($row, $chmg_wapu_exclude_categories_el);
 
                             if(!empty($response)){
                                 array_push($products_non_exits_arr, $response);
@@ -132,8 +136,9 @@ if(isset($_POST['submit'])){
 
  ?>
 
-<div class="wrap">
-    
+<div class="wrap sync-container">
+    <?php settings_errors(); ?>
+
     <h1><?php echo get_admin_page_title(); ?></h1>
 
      <form method="post" id="update-store" action="">
@@ -151,6 +156,26 @@ if(isset($_POST['submit'])){
 
                 </td>
             </tr>
+
+            <tr>
+                <th scope="row">Exclude Categories</th>
+                <td>
+                    <div class="chmg_wapu_input">
+
+                    <?php
+                        $chmg_wapu_exclude_categories_el =  get_option('chmg_wapu_exclude_categories_el');
+                    ?>
+                        <select  data-placeholder="Choose categories..." class="chosen-select" name="chmg_wapu_exclude_categories_el[]" multiple >
+                            <?php foreach(CHMG_WOO_DB_Utils::get_all_product_categories() as $cat): ?>
+                                <option <?php echo @in_array($cat->name, $chmg_wapu_exclude_categories_el) ? 'SELECTED' : ''; ?>  value="<?php echo $cat->name; ?>"><?php echo $cat->name; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <p class="description">Choose products categories to exclude from this update </p>
+                    </div>
+
+                    </td>
+            </tr>
+
             <tr>
                 <th scope="row">Sheet Name</th>
                 <td>
@@ -163,12 +188,15 @@ if(isset($_POST['submit'])){
                     </div>
 
                     </td>
-                </tr>
+            </tr>
+
+                <tr><td></td> <td>  
+                    <p class="submit update-store">
+            <input type="submit" name="submit" id="update-store-btn" class="button button-primary" value="Update Store">
+        </p>  </td></tr>
             </tbody>
         </table>
-        <p class="submit">
-            <input type="submit" name="submit" id="update-store-btn" class="button button-primary" value="Update Store">
-        </p>   
+       
 
         <img src="<?php echo CHMG_ADMIN_IMAGE_PATH.'/processing.gif'; ?>" class="processing-img hide-img" width="400" height="auto"/>
     </form>

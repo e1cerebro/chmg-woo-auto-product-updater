@@ -1,7 +1,7 @@
 <?php
 
 
-    function exclude_category($product){
+    function exclude_category($product, $chmg_wapu_exclude_categories_el, $cron_job){
 
         if(!empty($product)){
             
@@ -26,24 +26,46 @@
             } else{
                 return 0;
             }
-
+ 
+            //check if the user specified any excluded category
+            $post_exclude_categories_el = $chmg_wapu_exclude_categories_el;
             
-            $chmg_wapu_excluded_cats = array_map('trim', get_option('chmg_wapu_exclude_categories_el'));
+
+            //not a cron job and there are excluded products posted
+            if(false == $cron_job && !empty($post_exclude_categories_el)){
+                $chmg_wapu_excluded_cats = array_map('trim', $post_exclude_categories_el);
+               
+            }
+            //not a cron job and the excluded post is empty
+            elseif(false == $cron_job && empty($post_exclude_categories_el)){
+                $chmg_wapu_excluded_cats = [];
+            }
+            //cron job and post excluded is not empty
+            elseif(true == $cron_job && !empty($post_exclude_categories_el)){
+                $chmg_wapu_excluded_cats = array_map('trim', $post_exclude_categories_el);
+            }
+            //cron job and post excluded is empty
+            elseif(true == $cron_job && empty($post_exclude_categories_el)){
+                $chmg_wapu_excluded_cats = [];
+            }
+ 
+
             $chmg_wapu_product_cat = explode(",", strip_tags($product_categories));
             $chmg_wapu_product_cat = array_map('trim', $chmg_wapu_product_cat);
 
-            
-         
             $status =  !empty(array_intersect( $chmg_wapu_product_cat , $chmg_wapu_excluded_cats)) ? 1 : 0;  
-
+            
+            //return 1 if there are products that needs to be excluded. else return 0 iuf there are products to b ecluded
             return  $status;
+
         } else{
             return 1;
         }
     }
 
-    function processData($data){
+    function processData($data, $chmg_wapu_exclude_categories_el, $cron_job = false){
 
+      
         //Get product Id using the SKU
         $chmg_wapu_sku = get_option('chmg_wapu_product_sku_el');
  
@@ -62,7 +84,7 @@
         //get product object
         $product = getProduct($product_id);
 
-        $exclude_categories_status =  exclude_category($product);
+        $exclude_categories_status =  exclude_category($product , $chmg_wapu_exclude_categories_el, $cron_job);
 
         if(!$exclude_categories_status){
                 $terms = get_the_terms($product_id, 'product_type');

@@ -12,7 +12,7 @@ class CHMG_WOO_SHEET_MAPPING_SETTINGS{
         add_settings_section(
           'chmg_wapu_section',
           __( 'Map Sheet To Columns', TEXT_DOMAIN ),
-          '',
+		  [$this,'chmg_wapu_sheet_mapping_section_cb'],
           $this->plugin_name.'_settings'
         );
      }
@@ -27,27 +27,7 @@ class CHMG_WOO_SHEET_MAPPING_SETTINGS{
 				);
 				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_product_sku_el');
 		
-				/*====== MAP PRICE SETTINGS ======*/
-				add_settings_field(
-					'chmg_wapu_map_price_el',
-					__( 'MAP Price', TEXT_DOMAIN),
-					[$this,'chmg_wapu_map_price_cb'],
-					$this->plugin_name.'_settings',
-					'chmg_wapu_section'
-				);
-				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_map_price_el');
-
-				/*====== Swap MAP with regular price when product is on sale ======*/
-				add_settings_field(
-					'chmg_wapu_set_map_price_el',
-					__( 'MAP &#10152; Regular Price', TEXT_DOMAIN),
-					[$this,'chmg_wapu_set_map_price_cb'],
-					$this->plugin_name.'_settings',
-					'chmg_wapu_section'
-					);
-				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_set_map_price_el');
-	
-
+			
 				/*====== PRODUCT NAME SETTINGS ======*/
 				add_settings_field(
 					'chmg_wapu_product_name_el',
@@ -119,9 +99,34 @@ class CHMG_WOO_SHEET_MAPPING_SETTINGS{
 					'chmg_wapu_section'
 					);
 				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_skip_product_el');
+
+				/*====== MAP PRICE SETTINGS ======*/
+				add_settings_field(
+					'chmg_wapu_map_price_el',
+					__( 'MAP Price', TEXT_DOMAIN),
+					[$this,'chmg_wapu_map_price_cb'],
+					$this->plugin_name.'_settings',
+					'chmg_wapu_section'
+				);
+				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_map_price_el');
+	
+				/*====== Swap MAP with regular price when product is on sale ======*/
+				add_settings_field(
+					'chmg_wapu_set_map_price_el',
+					__( 'MAP &#10152; Regular Price', TEXT_DOMAIN),
+					[$this,'chmg_wapu_set_map_price_cb'],
+					$this->plugin_name.'_settings',
+					'chmg_wapu_section'
+					);
+				register_setting( $this->plugin_name.'_settings', 'chmg_wapu_set_map_price_el');
+		
      }
 	 
 	/* ---------- START CARD BLOCK HTML FIELDS --------------- */
+
+		public function chmg_wapu_sheet_mapping_section_cb(){
+			echo "<p>Please map the corresponding columns for these fields in your google sheet</p>";
+		}
        	/*============ Start Sheet Mapping  HMTL creation functions ============*/
 		/**
 		 * Create the HTML for the product SKU

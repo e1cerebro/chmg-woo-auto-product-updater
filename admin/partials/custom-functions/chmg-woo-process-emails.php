@@ -2,7 +2,7 @@
 
     class ChmgWapuEmail{
 
-        public function send_sync_complete_mail($data = []){
+        public function send_sync_complete_mail($data = [], $cron_job = false){
 
             $headers = array('Content-Type: text/html; charset=UTF-8');
             if(sizeof($data) > 0){
@@ -27,7 +27,10 @@
                 $message .= "<p>Sheet: https://docs.google.com/spreadsheets/d/".$sheetID."/edit</p>";
             }
             $recipient_email = self::get_recipients();
-            wp_mail( $recipient_email , "Woo Sync Report", $message, $headers);
+
+            $mail_title = false == $cron_job ? "Woo Sync Report" : "Cron Job Sync Report";
+
+            wp_mail( $recipient_email , $mail_title , $message, $headers);
             
         }
 
