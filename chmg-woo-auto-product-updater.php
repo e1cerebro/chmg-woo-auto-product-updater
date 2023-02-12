@@ -35,43 +35,51 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
+
+$cron_intervals = [
+	'1min' => 'Once every minute',
+	'3min' => 'Once every 3 minutes',
+	'30min' => 'Once every 30 minutes',
+	'hourly' => 'Once every hour',
+	'twicedaily' => 'Twice daily',
+	'daily' => 'Once daily',
+];
+
+$alphabets_mapping = [
+	'-1' => 'Skip This Option',
+	'0' => 'A',
+	'1' => 'B',
+	'2' => 'C',
+	'3' => 'D',
+	'4' => 'E',
+	'5' => 'F',
+	'6' => 'G',
+	'7' => 'H',
+	'8' => 'I',
+	'9' => 'J',
+	'10' => 'K',
+	'11' => 'L',
+	'12' => 'M',
+	'13' => 'N',
+	'14' => 'O',
+	'15' => 'P',
+	'16' => 'Q',
+	'17' => 'R',
+	'18' => 'S',
+	'19' => 'T',
+	'20' => 'U',
+	'21' => 'V',
+	'22' => 'W',
+	'23' => 'X',
+	'24' => 'Y',
+	'25' => 'Z',
+];
+
 define( 'CHMG_WOO_AUTO_PRODUCT_UPDATER_VERSION', '1.0.0' );
 define( 'CHMG_WAPU_ADMIN_EMAIL', get_option('admin_email') );
 define( 'TEXT_DOMAIN', 'chmg-woo-auto-product-updater');
-define( 'CRON_INTERVALS', [	'1min' => 'Once every minute',
-							'3min' => 'Once every 3 minutes',
-							'30min' => 'Once every 30 minutes',
-							'hourly' => 'Once every hour',
-							'twicedaily' => 'Twice daily',
-							'daily' => 'Once daily',]);
-define( 'ALPHABETS_MAPPING', [	'-1' => 'Skip This Option',
-								'0' => 'A', 
-								'1' => 'B', 
-								'2' => 'C', 
-								'3' => 'D', 
-								'4' => 'E', 
-								'5' => 'F', 
-								'6' => 'G', 
-								'7' => 'H', 
-								'8' => 'I', 
-								'9' => 'J', 
-								'10'=>'K', 
-								'11'=>'L', 
-								'12'=>'M', 
-								'13'=>'N', 
-								'14'=>'O', 
-								'15'=>'P', 
-								'16'=>'Q', 
-								'17'=>'R', 
-								'18'=>'S', 
-								'19'=>'T', 
-								'20'=>'U', 
-								'21'=>'V', 
-								'22'=>'W', 
-								'23'=>'X', 
-								'24'=>'Y', 
-								'25'=>'Z']);
-
+define( 'CRON_INTERVALS', $cron_intervals);
+define( 'ALPHABETS_MAPPING', $alphabets_mapping);
 
 define('CHMG_ADMIN_IMAGE_PATH', plugin_dir_url( __FILE__ ).'admin/img/');
 
